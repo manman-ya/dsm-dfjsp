@@ -1,0 +1,26 @@
+seed: 20260408
+num_types: 2
+
+# New rule (paper-aligned): each instance total SRU is 3 or 4.
+total_sru:
+  candidates: [3, 4]
+  method: cycle_by_instance
+  split_method: balanced_min1_randomized
+
+# Assumption set used for SDMK01-15 extension:
+type_assignment:
+  method: balanced_shuffle
+
+# Value ranges (integer) used to fill SM-DFJSP additional attributes.
+# These are aligned with the value scale reported in the paper case tables.
+process_cost_range: [2, 6]
+transport_time_range: [2, 25]
+transport_cost_range: [2, 6]
+
+# SRU-machine efficiency factor for transforming MK process time.
+process_time_factor_range: [0.85, 1.15]
+
+# SRU machine subset size ratio relative to MK machine count.
+# Machine sets are generated per-SRU and are no longer fully identical.
+sru_machine_ratio_range: [0.6, 0.9]
+

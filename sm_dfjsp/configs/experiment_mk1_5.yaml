@@ -1,0 +1,57 @@
+seed: 20260408
+instances:
+  - sdmk01
+  - sdmk02
+  - sdmk03
+  - sdmk04
+  - sdmk05
+
+eda_ts:
+  popsize: 50
+  max_iter: 100
+  time_limit_s: 100.0
+  alpha: 0.5
+  beta: 0.5
+  gamma: 0.5
+  mu: 0.1
+  epsilon: 0.008
+  tmax: 10
+
+eda:
+  popsize: 50
+  max_iter: 100
+  time_limit_s: 100.0
+  alpha: 0.5
+  beta: 0.2
+  gamma: 0.4
+  mu: 0.2
+  epsilon: 0.008
+  tmax: 0
+
+eda_vns:
+  popsize: 100
+  max_iter: 100
+  time_limit_s: 100.0
+  alpha: 0.5
+  beta: 0.2
+  gamma: 0.4
+  mu: 0.2
+  epsilon: 0.008
+  tmax: 10
+
+nsgaii:
+  popsize: 50
+  max_iter: 100
+  time_limit_s: 100.0
+  cr: 0.7
+  mr: 0.3
+
+h_gats:
+  popsize: 50
+  max_iter: 100
+  time_limit_s: 100.0
+  cr: 0.2
+  mr: 0.02
+  t: 40
+  epsilon: 0.008
+

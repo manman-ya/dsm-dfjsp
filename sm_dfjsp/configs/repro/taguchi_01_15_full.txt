@@ -1,0 +1,5 @@
+Recommended full-run command (mk01-15 scope):
+
+$env:PYTHONPATH='src'
+python scripts/tune_params_taguchi.py --instance sdmk15 --runs-per-combo 30 --time-limit 100 --max-iter 100 --out-dir reports/repro/taguchi_01_15
+

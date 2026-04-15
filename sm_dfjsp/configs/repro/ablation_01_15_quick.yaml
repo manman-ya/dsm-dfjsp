@@ -1,0 +1,30 @@
+seed: 20260408
+n_runs: 2
+instances:
+  - sdmk01
+  - sdmk02
+  - sdmk03
+  - sdmk04
+  - sdmk05
+  - sdmk06
+  - sdmk07
+  - sdmk08
+  - sdmk09
+  - sdmk10
+  - sdmk11
+  - sdmk12
+  - sdmk13
+  - sdmk14
+  - sdmk15
+
+eda_ts:
+  popsize: 20
+  max_iter: 3
+  time_limit_s: 8.0
+  alpha: 0.5
+  beta: 0.5
+  gamma: 0.5
+  mu: 0.1
+  epsilon: 0.008
+  tmax: 2
+
