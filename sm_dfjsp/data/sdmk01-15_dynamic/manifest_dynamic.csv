@@ -1,0 +1,16 @@
+instance,source,jobs,initial_jobs,future_jobs,arrival_events,seed,file
+sdmk01_dyn,sdmk01.json,10,4,6,6,20260408,data/sdmk01-15_dynamic/sdmk01_dyn.json
+sdmk02_dyn,sdmk02.json,10,4,6,6,20260409,data/sdmk01-15_dynamic/sdmk02_dyn.json
+sdmk03_dyn,sdmk03.json,15,6,9,9,20260410,data/sdmk01-15_dynamic/sdmk03_dyn.json
+sdmk04_dyn,sdmk04.json,15,6,9,7,20260411,data/sdmk01-15_dynamic/sdmk04_dyn.json
+sdmk05_dyn,sdmk05.json,15,6,9,8,20260412,data/sdmk01-15_dynamic/sdmk05_dyn.json
+sdmk06_dyn,sdmk06.json,10,4,6,6,20260413,data/sdmk01-15_dynamic/sdmk06_dyn.json
+sdmk07_dyn,sdmk07.json,20,8,12,11,20260414,data/sdmk01-15_dynamic/sdmk07_dyn.json
+sdmk08_dyn,sdmk08.json,20,8,12,9,20260415,data/sdmk01-15_dynamic/sdmk08_dyn.json
+sdmk09_dyn,sdmk09.json,20,8,12,11,20260416,data/sdmk01-15_dynamic/sdmk09_dyn.json
+sdmk10_dyn,sdmk10.json,20,8,12,9,20260417,data/sdmk01-15_dynamic/sdmk10_dyn.json
+sdmk11_dyn,sdmk11.json,30,12,18,13,20260418,data/sdmk01-15_dynamic/sdmk11_dyn.json
+sdmk12_dyn,sdmk12.json,30,12,18,14,20260419,data/sdmk01-15_dynamic/sdmk12_dyn.json
+sdmk13_dyn,sdmk13.json,30,12,18,13,20260420,data/sdmk01-15_dynamic/sdmk13_dyn.json
+sdmk14_dyn,sdmk14.json,30,12,18,15,20260421,data/sdmk01-15_dynamic/sdmk14_dyn.json
+sdmk15_dyn,sdmk15.json,30,12,18,14,20260422,data/sdmk01-15_dynamic/sdmk15_dyn.json

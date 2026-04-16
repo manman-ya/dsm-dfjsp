@@ -4,13 +4,13 @@ import csv
 from dataclasses import dataclass
 import math
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Sequence, Tuple
 
 import yaml
 
 from smdfjsp.core.random_utils import make_rng
 from smdfjsp.core.types import Job, Operation, ProcessOption, SMDFJSPInstance, SRU
-from smdfjsp.data.io import save_instance_json
+from smdfjsp.data.io import build_arrival_stream_from_release_time, save_instance_json
 from smdfjsp.data.mk_parser import MKInstance, parse_mk_file
 
 
@@ -377,4 +377,77 @@ def build_sdmk_dataset(
         )
         writer.writeheader()
         writer.writerows(rows)
+
+
+def generate_release_time_map(
+    job_ids: Sequence[int],
+    seed: int,
+    initial_job_ratio: float,
+    arrival_time_range: Tuple[int, int],
+    step: int = 1,
+) -> Tuple[Dict[int, float], List[int]]:
+    """
+    Generate release_time for dynamic conversion:
+    - a subset of jobs starts at t=0
+    - others arrive later in [min_t, max_t], snapped by step
+    """
+    if not job_ids:
+        return {}, []
+    rng = make_rng(seed).py_rng
+    ids = list(job_ids)
+    rng.shuffle(ids)
+    n = len(ids)
+    ratio = max(0.0, min(1.0, float(initial_job_ratio)))
+    n0 = int(round(n * ratio))
+    n0 = max(1, min(n, n0))
+    initial = sorted(ids[:n0])
+    future = ids[n0:]
+    t_low, t_high = int(arrival_time_range[0]), int(arrival_time_range[1])
+    if t_high < t_low:
+        t_high = t_low
+    step = max(1, int(step))
+    rel: Dict[int, float] = {j: 0.0 for j in initial}
+    for j in future:
+        t = rng.randint(t_low, t_high)
+        t = (t // step) * step
+        rel[j] = float(max(step, t))
+    return rel, initial
+
+
+def convert_static_instance_to_dynamic(
+    instance: SMDFJSPInstance,
+    release_time_by_job: Dict[int, float],
+    initial_jobs: Optional[List[int]] = None,
+    dynamic_tag: str = "dynamic_release_time",
+) -> SMDFJSPInstance:
+    jobs: List[Job] = []
+    for job in instance.jobs:
+        jobs.append(
+            Job(
+                job_id=job.job_id,
+                type_id=job.type_id,
+                operations=list(job.operations),
+                release_time=float(release_time_by_job.get(job.job_id, 0.0)),
+            )
+        )
+    if initial_jobs is None:
+        init = sorted(j.job_id for j in jobs if j.release_time <= 0.0)
+    else:
+        init = sorted({int(x) for x in initial_jobs})
+    arrival_stream = build_arrival_stream_from_release_time(jobs)
+    metadata = dict(instance.metadata)
+    metadata["dynamic_tag"] = dynamic_tag
+    metadata["release_time_source"] = "job.release_time"
+    metadata["arrival_stream_source"] = "derived_from_release_time"
+    return SMDFJSPInstance(
+        name=instance.name,
+        num_types=instance.num_types,
+        jobs=jobs,
+        srus=list(instance.srus),
+        transport_time=dict(instance.transport_time),
+        transport_cost_per_time=dict(instance.transport_cost_per_time),
+        metadata=metadata,
+        initial_jobs=init,
+        arrival_stream=arrival_stream,
+    )
 

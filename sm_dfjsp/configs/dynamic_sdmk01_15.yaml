@@ -1,0 +1,13 @@
+seed: 20260408
+source_dir: data/sdmk01-15
+output_dir: data/sdmk01-15_dynamic
+manifest_name: manifest_dynamic.csv
+pattern: sdmk*.json
+name_suffix: _dyn
+
+# Portion of jobs released at time 0.
+initial_job_ratio: 0.4
+
+# Release times for non-initial jobs.
+arrival_time_range: [5, 120]
+release_time_step: 5

@@ -10,7 +10,7 @@ from __future__ import annotations
 import math
 import time
 from dataclasses import dataclass
-from typing import Dict, List, Sequence, Tuple
+from typing import Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
 
@@ -24,7 +24,7 @@ from smdfjsp.core.encoding import (
 )
 from smdfjsp.core.pareto import crowding_distance, dominates, fast_non_dominated_sort, merge_non_dominated
 from smdfjsp.core.random_utils import RNGPack, make_rng
-from smdfjsp.core.types import EncodedIndividual, ObjPair, SMDFJSPInstance
+from smdfjsp.core.types import DecodeContext, EncodedIndividual, ObjPair, SMDFJSPInstance
 from smdfjsp.model.evaluator import evaluate_individual
 
 
@@ -271,10 +271,14 @@ class EDATS:
         return repair_individual(ind, self.instance, self.option_index, self.rng)
 
     @staticmethod
-    def _evaluate_population(instance: SMDFJSPInstance, pop: List[EncodedIndividual]) -> None:
+    def _evaluate_population(
+        instance: SMDFJSPInstance,
+        pop: List[EncodedIndividual],
+        eval_ctx: Optional[DecodeContext] = None,
+    ) -> None:
         # Evaluate objective values and feasibility for each individual.
         for ind in pop:
-            result = evaluate_individual(instance, ind)
+            result = evaluate_individual(instance, ind, ctx=eval_ctx)
             ind.objectives = result.objectives
             ind.feasible = result.feasible
 
@@ -436,10 +440,10 @@ class EDATS:
         # Penalize frequent move patterns to diversify TS search.
         return (obj[0] + self.cfg.epsilon * obj[0] * freq, obj[1] + self.cfg.epsilon * obj[1] * freq)
 
-    def _tabu_search(self, initial: EncodedIndividual) -> EncodedIndividual:
+    def _tabu_search(self, initial: EncodedIndividual, eval_ctx: Optional[DecodeContext] = None) -> EncodedIndividual:
         # TS starts from one seed solution and explores three neighborhoods.
         current = initial
-        current_eval = evaluate_individual(self.instance, current)
+        current_eval = evaluate_individual(self.instance, current, ctx=eval_ctx)
         current.objectives = current_eval.objectives
         best = current
         best_obj = current.objectives
@@ -457,7 +461,7 @@ class EDATS:
             neighbors = n1 + n2 + n3
             if not neighbors:
                 break
-            self._evaluate_population(self.instance, neighbors)
+            self._evaluate_population(self.instance, neighbors, eval_ctx=eval_ctx)
 
             scored: List[Tuple[ObjPair, EncodedIndividual]] = []
             for nb in neighbors:
@@ -502,11 +506,11 @@ class EDATS:
                 best_obj = current.objectives
         return best
 
-    def run(self) -> RunResult:
+    def run(self, eval_ctx: Optional[DecodeContext] = None) -> RunResult:
         # Main evolution loop.
         start = time.time()
         pop = [self._build_individual() for _ in range(self.cfg.popsize)]
-        self._evaluate_population(self.instance, pop)
+        self._evaluate_population(self.instance, pop, eval_ctx=eval_ctx)
         nd_pool: List[Tuple[ObjPair, EncodedIndividual]] = []
         if self.cfg.use_nd_memory:
             nd_pool = merge_non_dominated(
@@ -527,14 +531,14 @@ class EDATS:
 
             # 2) Sample new population from updated probabilistic models.
             new_pop = [self._build_individual() for _ in range(self.cfg.popsize)]
-            self._evaluate_population(self.instance, new_pop)
+            self._evaluate_population(self.instance, new_pop, eval_ctx=eval_ctx)
 
             # TS component starts Tmax times.
             if self.cfg.use_ts and nd_pool:
                 for _ in range(self.cfg.tmax):
                     seed_ind = self.rng.py_rng.choice(nd_pool)[1]
-                    improved = self._tabu_search(seed_ind)
-                    ev = evaluate_individual(self.instance, improved)
+                    improved = self._tabu_search(seed_ind, eval_ctx=eval_ctx)
+                    ev = evaluate_individual(self.instance, improved, ctx=eval_ctx)
                     improved.objectives = ev.objectives
                     improved.feasible = ev.feasible
                     new_pop.append(improved)

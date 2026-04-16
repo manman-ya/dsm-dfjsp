@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from collections import Counter, defaultdict
 from copy import deepcopy
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 
 from smdfjsp.core.random_utils import RNGPack
 from smdfjsp.core.types import EncodedIndividual, SMDFJSPInstance
@@ -39,6 +39,81 @@ def expected_os_multiset(instance: SMDFJSPInstance, type_id: int) -> List[int]:
         if job.type_id == type_id:
             tokens.extend([job.job_id] * len(job.operations))
     return tokens
+
+
+def expected_remaining_os_multiset(
+    instance: SMDFJSPInstance,
+    type_id: int,
+    completed_ops_by_job: Dict[int, int],
+    in_progress_op_by_job: Optional[Dict[int, int]] = None,
+    eligible_job_ids: Optional[Set[int]] = None,
+) -> List[int]:
+    """Expected OS multiset for rolling rescheduling (only unstarted operations)."""
+    in_progress = in_progress_op_by_job or {}
+    eligible = eligible_job_ids if eligible_job_ids is not None else {j.job_id for j in instance.jobs}
+    tokens: List[int] = []
+    for job in instance.jobs:
+        if job.type_id != type_id or job.job_id not in eligible:
+            continue
+        completed = int(completed_ops_by_job.get(job.job_id, 0))
+        started_offset = completed + (1 if job.job_id in in_progress else 0)
+        remain = max(len(job.operations) - started_offset, 0)
+        tokens.extend([job.job_id] * remain)
+    return tokens
+
+
+def remaining_os_multiset(
+    instance: SMDFJSPInstance,
+    completed_ops_by_job: Dict[int, int],
+    in_progress_op_by_job: Optional[Dict[int, int]] = None,
+    eligible_job_ids: Optional[Set[int]] = None,
+) -> Dict[int, List[int]]:
+    out: Dict[int, List[int]] = {}
+    for t in range(1, instance.num_types + 1):
+        out[t] = expected_remaining_os_multiset(
+            instance=instance,
+            type_id=t,
+            completed_ops_by_job=completed_ops_by_job,
+            in_progress_op_by_job=in_progress_op_by_job,
+            eligible_job_ids=eligible_job_ids,
+        )
+    return out
+
+
+def repair_os_for_remaining(
+    instance: SMDFJSPInstance,
+    os_layer: Dict[int, List[int]],
+    completed_ops_by_job: Dict[int, int],
+    rng: RNGPack,
+    in_progress_op_by_job: Optional[Dict[int, int]] = None,
+    eligible_job_ids: Optional[Set[int]] = None,
+) -> Dict[int, List[int]]:
+    # Repair OS so remaining-token multiplicities exactly match expected counts.
+    out: Dict[int, List[int]] = {}
+    expected_all = remaining_os_multiset(
+        instance=instance,
+        completed_ops_by_job=completed_ops_by_job,
+        in_progress_op_by_job=in_progress_op_by_job,
+        eligible_job_ids=eligible_job_ids,
+    )
+    for t in range(1, instance.num_types + 1):
+        expected = expected_all[t]
+        expected_count = Counter(expected)
+        keep: List[int] = []
+        current = os_layer.get(t, [])
+        for job_id in current:
+            if expected_count[job_id] > 0:
+                keep.append(job_id)
+                expected_count[job_id] -= 1
+        missing: List[int] = []
+        for job_id, cnt in expected_count.items():
+            missing.extend([job_id] * cnt)
+        rng.py_rng.shuffle(missing)
+        merged = keep + missing
+        if len(merged) > len(expected):
+            merged = merged[: len(expected)]
+        out[t] = merged
+    return out
 
 
 def build_compatible_sru_map(
@@ -130,13 +205,52 @@ def op_from_ua_os(
     counter_by_job: Dict[int, int] = defaultdict(int)
     job_map = instance.job_map()
     for t in range(1, instance.num_types + 1):
-        for job_id in os_layer[t]:
+        for job_id in os_layer.get(t, []):
             counter_by_job[job_id] += 1
             op_id = counter_by_job[job_id]
             if op_id <= len(job_map[job_id].operations):
                 sru_id = ua_layer[job_id]
                 op_layer[sru_id].append((job_id, op_id))
     return op_layer
+
+
+def op_from_ua_os_remaining(
+    instance: SMDFJSPInstance,
+    ua_layer: Dict[int, int],
+    os_layer: Dict[int, List[int]],
+    completed_ops_by_job: Dict[int, int],
+    in_progress_op_by_job: Optional[Dict[int, int]] = None,
+    eligible_job_ids: Optional[Set[int]] = None,
+) -> Dict[int, List[Tuple[int, int]]]:
+    """
+    Build OP layer from UA and OS for rolling mode.
+    Only unstarted operations are produced.
+    """
+    in_progress = in_progress_op_by_job or {}
+    eligible = eligible_job_ids if eligible_job_ids is not None else {j.job_id for j in instance.jobs}
+    op_layer: Dict[int, List[Tuple[int, int]]] = {s.sru_id: [] for s in instance.srus}
+    counter_by_job: Dict[int, int] = defaultdict(int)
+    for job in instance.jobs:
+        completed = int(completed_ops_by_job.get(job.job_id, 0))
+        counter_by_job[job.job_id] = completed + (1 if job.job_id in in_progress else 0)
+    job_map = instance.job_map()
+    for t in range(1, instance.num_types + 1):
+        for job_id in os_layer.get(t, []):
+            if job_id not in eligible:
+                continue
+            counter_by_job[job_id] += 1
+            op_id = counter_by_job[job_id]
+            if op_id <= len(job_map[job_id].operations) and job_id in ua_layer:
+                sru_id = ua_layer[job_id]
+                op_layer[sru_id].append((job_id, op_id))
+    return op_layer
+
+
+def apply_frozen_ua_constraints(ua_layer: Dict[int, int], frozen_ua_by_job: Dict[int, int]) -> Dict[int, int]:
+    """Force started jobs to keep assigned SRU in rolling mode."""
+    out = dict(ua_layer)
+    out.update({int(j): int(s) for j, s in frozen_ua_by_job.items()})
+    return out
 
 
 def random_ms(

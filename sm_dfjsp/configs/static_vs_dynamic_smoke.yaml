@@ -1,0 +1,24 @@
+seed: 20260408
+instance: data/dauzere_dynamic/sdmk01a_dyn.json
+out_dir: reports/static_vs_dynamic_smoke
+dynamic_enabled: true
+until_time: 4000.0
+
+rolling:
+  trigger_on_arrival: true
+  trigger_on_periodic: true
+  periodic_interval: 120.0
+  trigger_on_machine_idle: false
+  trigger_on_op_finish: false
+  reschedule_cooldown: 0.0
+
+eda_ts:
+  popsize: 6
+  max_iter: 3
+  time_limit_s: 1.5
+  alpha: 0.5
+  beta: 0.5
+  gamma: 0.5
+  mu: 0.1
+  epsilon: 0.008
+  tmax: 1

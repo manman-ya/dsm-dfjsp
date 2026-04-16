@@ -1,0 +1,22 @@
+seed: 20260408
+instance: data/dauzere_dynamic/sdmk01a_dyn.json
+until_time: 300.0
+
+rolling:
+  trigger_on_arrival: true
+  trigger_on_periodic: true
+  periodic_interval: 20.0
+  trigger_on_machine_idle: false
+  trigger_on_op_finish: false
+  reschedule_cooldown: 0.0
+
+eda_ts:
+  popsize: 30
+  max_iter: 60
+  time_limit_s: 20.0
+  alpha: 0.5
+  beta: 0.5
+  gamma: 0.5
+  mu: 0.1
+  epsilon: 0.008
+  tmax: 5

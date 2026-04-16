@@ -5,17 +5,21 @@ from __future__ import annotations
 # - select next generation with NSGA-II environmental selection
 
 from dataclasses import dataclass
-from typing import List, Sequence, Tuple
+from typing import List, Optional, Sequence, Tuple
 
 from smdfjsp.core.pareto import crowding_distance, fast_non_dominated_sort
-from smdfjsp.core.types import EncodedIndividual, ObjPair, SMDFJSPInstance
+from smdfjsp.core.types import DecodeContext, EncodedIndividual, ObjPair, SMDFJSPInstance
 from smdfjsp.model.evaluator import evaluate_individual
 
 
-def evaluate_population(instance: SMDFJSPInstance, pop: List[EncodedIndividual]) -> None:
+def evaluate_population(
+    instance: SMDFJSPInstance,
+    pop: List[EncodedIndividual],
+    eval_ctx: Optional[DecodeContext] = None,
+) -> None:
     # Fill objective/feasibility for each individual in-place.
     for ind in pop:
-        r = evaluate_individual(instance, ind)
+        r = evaluate_individual(instance, ind, ctx=eval_ctx)
         ind.objectives = r.objectives
         ind.feasible = r.feasible
 

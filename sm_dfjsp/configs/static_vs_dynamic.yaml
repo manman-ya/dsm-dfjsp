@@ -1,0 +1,26 @@
+seed: 20260408
+instance: data/dauzere/sdmk01a.json
+out_dir: reports/static_vs_dynamic
+dynamic_enabled: true
+
+rolling:
+  trigger_on_arrival: true
+  trigger_on_periodic: true
+  periodic_interval: 20.0
+  trigger_on_machine_idle: false
+  trigger_on_op_finish: false
+  reschedule_cooldown: 0.0
+
+# If omitted in CLI, horizon defaults to heuristic estimate.
+until_time: 600.0
+
+eda_ts:
+  popsize: 20
+  max_iter: 20
+  time_limit_s: 10.0
+  alpha: 0.5
+  beta: 0.5
+  gamma: 0.5
+  mu: 0.1
+  epsilon: 0.008
+  tmax: 3
