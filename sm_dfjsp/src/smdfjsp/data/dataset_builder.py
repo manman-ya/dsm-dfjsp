@@ -218,6 +218,27 @@ def _build_srus_nonidentical(
     return srus
 
 
+def _build_srus_full_identical(
+    mk: MKInstance,
+    num_types: int,
+    sru_count_by_type: List[int],
+) -> List[SRU]:
+    """
+    Build SRUs with identical full machine sets:
+    - every SRU has all machines in the source MK instance
+    - SRU count per type still follows sru_count_by_type
+    """
+    srus: List[SRU] = []
+    sid = 1
+    full_machine_ids = list(range(1, mk.num_machines + 1))
+    for t in range(1, num_types + 1):
+        count = int(sru_count_by_type[t - 1])
+        for _ in range(count):
+            srus.append(SRU(sru_id=sid, type_id=t, machine_ids=list(full_machine_ids)))
+            sid += 1
+    return srus
+
+
 def convert_mk_to_sdmk(mk: MKInstance, spec: DatasetSpec, seed_offset: int = 0) -> SMDFJSPInstance:
     local_seed = spec.seed + seed_offset
     rng = make_rng(local_seed)
@@ -238,13 +259,11 @@ def convert_mk_to_sdmk(mk: MKInstance, spec: DatasetSpec, seed_offset: int = 0) 
         seed=local_seed + 7919,
         method=spec.sru_split_method,
     )
-    srus = _build_srus_nonidentical(
+    # New policy: all SRUs share the same full machine set.
+    srus = _build_srus_full_identical(
         mk=mk,
-        job_type=job_type,
         num_types=spec.num_types,
         sru_count_by_type=sru_count_by_type,
-        ratio_range=spec.sru_machine_ratio_range,
-        seed=local_seed,
     )
     srus_by_type: Dict[int, List[SRU]] = {}
     for s in srus:
@@ -329,8 +348,9 @@ def convert_mk_to_sdmk(mk: MKInstance, spec: DatasetSpec, seed_offset: int = 0) 
             "total_sru": total_sru,
             "sru_split_method": spec.sru_split_method,
             "sru_split_by_type": sru_count_by_type,
-            "assumption_machine_policy": "typewise_nonidentical_machine_subsets_with_global_feasibility_guard",
+            "assumption_machine_policy": "typewise_identical_full_machine_set",
             "sru_machine_ratio_range": spec.sru_machine_ratio_range,
+            "sru_machine_ratio_range_ignored": True,
             "assumption_type_assignment": spec.type_assignment,
         },
     )

@@ -1,0 +1,44 @@
+[
+  {
+    "instance_name": "sdmk01a_dyn",
+    "seed": 20260408,
+    "method": "static_full_information_oracle",
+    "total_cost": 42083.0,
+    "makespan": 2378.0,
+    "avg_response_time": 77.1,
+    "avg_flow_time": 2223.6,
+    "reschedule_count": 0,
+    "runtime_seconds": 103.53264659999999,
+    "scheduled_jobs": 10,
+    "total_jobs": 10,
+    "is_complete": true
+  },
+  {
+    "instance_name": "sdmk01a_dyn",
+    "seed": 20260408,
+    "method": "static_no_reschedule_baseline",
+    "total_cost": 44302.0,
+    "makespan": 4069.0,
+    "avg_response_time": 888.1,
+    "avg_flow_time": 2124.4,
+    "reschedule_count": 0,
+    "runtime_seconds": 100.02170240000001,
+    "scheduled_jobs": 10,
+    "total_jobs": 10,
+    "is_complete": true
+  },
+  {
+    "instance_name": "sdmk01a_dyn",
+    "seed": 20260408,
+    "method": "dynamic_rolling_method",
+    "total_cost": 42083.0,
+    "makespan": 1917.0,
+    "avg_response_time": 29.6,
+    "avg_flow_time": 1710.6,
+    "reschedule_count": 206,
+    "runtime_seconds": 9062.069113399999,
+    "scheduled_jobs": 10,
+    "total_jobs": 10,
+    "is_complete": true
+  }
+]

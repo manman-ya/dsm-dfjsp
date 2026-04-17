@@ -1,0 +1,5 @@
+instance,source,jobs,initial_jobs,future_jobs,arrival_events,seed,file
+sdmk02a_dyn,sdmk02a.json,10,4,6,6,20260408,data/dauzere_dynamic/sdmk02a_dyn.json
+sdmk03a_dyn,sdmk03a.json,10,4,6,6,20260409,data/dauzere_dynamic/sdmk03a_dyn.json
+sdmk04a_dyn,sdmk04a.json,10,4,6,7,20260410,data/dauzere_dynamic/sdmk04a_dyn.json
+sdmk05a_dyn,sdmk05a.json,10,4,6,5,20260411,data/dauzere_dynamic/sdmk05a_dyn.json

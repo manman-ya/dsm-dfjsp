@@ -1,4 +1,0 @@
-instance_name,seed,method,total_cost,makespan,avg_response_time,avg_flow_time,reschedule_count,runtime_seconds,scheduled_jobs,total_jobs,is_complete
-sdmk01_dyn,20260408,static_full_information_oracle,975.0,62.0,1.8,44.4,0,0.2124756,10,10,True
-sdmk01_dyn,20260408,static_no_reschedule_baseline,991.0,126.0,0.2,27.6,0,0.07007730000000012,10,10,True
-sdmk01_dyn,20260408,dynamic_rolling_method,947.0,127.0,0.2,27.4,31,0.22060649999999993,10,10,True

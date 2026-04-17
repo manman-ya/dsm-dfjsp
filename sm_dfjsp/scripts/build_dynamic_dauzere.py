@@ -14,17 +14,21 @@ from smdfjsp.data.io import load_instance_json, save_instance_json
 def main() -> None:
     parser = argparse.ArgumentParser(description="Build dynamic dauzere dataset from existing sdmk*.json files.")
     parser.add_argument("--config", default="configs/dynamic_dauzere.yaml")
+    parser.add_argument("--pattern", default=None, help="Glob pattern for source files, overrides config.pattern.")
+    parser.add_argument("--manifest-name", default=None, help="Manifest filename, overrides config.manifest_name.")
+    parser.add_argument("--source-dir", default=None, help="Source directory, overrides config.source_dir.")
+    parser.add_argument("--output-dir", default=None, help="Output directory, overrides config.output_dir.")
     args = parser.parse_args()
 
     root = Path(__file__).resolve().parents[1]
     cfg = yaml.safe_load((root / args.config).read_text(encoding="utf-8"))
 
-    source_dir = root / cfg.get("source_dir", "data/dauzere")
-    output_dir = root / cfg.get("output_dir", "data/dauzere_dynamic")
+    source_dir = root / (args.source_dir or cfg.get("source_dir", "data/dauzere"))
+    output_dir = root / (args.output_dir or cfg.get("output_dir", "data/dauzere_dynamic"))
     output_dir.mkdir(parents=True, exist_ok=True)
-    manifest_path = output_dir / cfg.get("manifest_name", "manifest_dynamic.csv")
+    manifest_path = output_dir / (args.manifest_name or cfg.get("manifest_name", "manifest_dynamic.csv"))
 
-    pattern = str(cfg.get("pattern", "sdmk*.json"))
+    pattern = str(args.pattern or cfg.get("pattern", "sdmk*.json"))
     seed = int(cfg.get("seed", 20260408))
     initial_job_ratio = float(cfg.get("initial_job_ratio", 0.4))
     t_range = tuple(cfg.get("arrival_time_range", [5, 120]))

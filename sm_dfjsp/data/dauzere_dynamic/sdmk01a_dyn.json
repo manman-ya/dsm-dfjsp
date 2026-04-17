@@ -16,11 +16,12 @@
       1,
       2
     ],
-    "assumption_machine_policy": "typewise_nonidentical_machine_subsets_with_global_feasibility_guard",
+    "assumption_machine_policy": "typewise_identical_full_machine_set",
     "sru_machine_ratio_range": [
       0.6,
       0.9
     ],
+    "sru_machine_ratio_range_ignored": true,
     "assumption_type_assignment": "balanced_shuffle",
     "source_set": "dauzere",
     "source_instance": "01a",
@@ -55,13 +56,13 @@
               "sru_id": 2,
               "machine_id": 1,
               "process_time": 47,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 6
             },
             {
               "sru_id": 3,
               "machine_id": 1,
               "process_time": 40,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 2
             }
           ]
         },
@@ -72,13 +73,13 @@
               "sru_id": 2,
               "machine_id": 3,
               "process_time": 69,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 2
             },
             {
               "sru_id": 3,
               "machine_id": 3,
               "process_time": 67,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 4
             }
           ]
         },
@@ -89,7 +90,13 @@
               "sru_id": 2,
               "machine_id": 5,
               "process_time": 20,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 4
+            },
+            {
+              "sru_id": 3,
+              "machine_id": 5,
+              "process_time": 20,
+              "process_cost_per_time": 6
             }
           ]
         },
@@ -100,13 +107,13 @@
               "sru_id": 2,
               "machine_id": 4,
               "process_time": 15,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 5
             },
             {
               "sru_id": 3,
               "machine_id": 4,
               "process_time": 14,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 6
             }
           ]
         },
@@ -123,13 +130,13 @@
               "sru_id": 2,
               "machine_id": 3,
               "process_time": 106,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 3
             },
             {
               "sru_id": 2,
               "machine_id": 5,
               "process_time": 86,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 4
             },
             {
               "sru_id": 3,
@@ -141,7 +148,13 @@
               "sru_id": 3,
               "machine_id": 3,
               "process_time": 104,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 4
+            },
+            {
+              "sru_id": 3,
+              "machine_id": 5,
+              "process_time": 87,
+              "process_cost_per_time": 2
             }
           ]
         },
@@ -152,6 +165,12 @@
               "sru_id": 2,
               "machine_id": 5,
               "process_time": 21,
+              "process_cost_per_time": 6
+            },
+            {
+              "sru_id": 3,
+              "machine_id": 5,
+              "process_time": 22,
               "process_cost_per_time": 4
             }
           ]
@@ -163,13 +182,13 @@
               "sru_id": 2,
               "machine_id": 1,
               "process_time": 71,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 2
             },
             {
               "sru_id": 3,
               "machine_id": 1,
               "process_time": 59,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -180,7 +199,7 @@
               "sru_id": 2,
               "machine_id": 2,
               "process_time": 33,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 5
             },
             {
               "sru_id": 3,
@@ -197,7 +216,7 @@
               "sru_id": 2,
               "machine_id": 3,
               "process_time": 92,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 3
             },
             {
               "sru_id": 3,
@@ -215,6 +234,12 @@
               "machine_id": 5,
               "process_time": 20,
               "process_cost_per_time": 3
+            },
+            {
+              "sru_id": 3,
+              "machine_id": 5,
+              "process_time": 21,
+              "process_cost_per_time": 4
             }
           ]
         },
@@ -225,6 +250,12 @@
               "sru_id": 2,
               "machine_id": 5,
               "process_time": 59,
+              "process_cost_per_time": 3
+            },
+            {
+              "sru_id": 3,
+              "machine_id": 5,
+              "process_time": 60,
               "process_cost_per_time": 5
             }
           ]
@@ -236,13 +267,13 @@
               "sru_id": 2,
               "machine_id": 3,
               "process_time": 32,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 5
             },
             {
               "sru_id": 3,
               "machine_id": 3,
               "process_time": 31,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 4
             }
           ]
         },
@@ -253,19 +284,25 @@
               "sru_id": 2,
               "machine_id": 4,
               "process_time": 10,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 3
             },
             {
               "sru_id": 2,
               "machine_id": 5,
               "process_time": 10,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 4
             },
             {
               "sru_id": 3,
               "machine_id": 4,
               "process_time": 9,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 2
+            },
+            {
+              "sru_id": 3,
+              "machine_id": 5,
+              "process_time": 10,
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -276,13 +313,13 @@
               "sru_id": 2,
               "machine_id": 3,
               "process_time": 69,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 4
             },
             {
               "sru_id": 3,
               "machine_id": 3,
               "process_time": 67,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 2
             }
           ]
         },
@@ -317,13 +354,13 @@
               "sru_id": 2,
               "machine_id": 1,
               "process_time": 46,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 4
             },
             {
               "sru_id": 2,
               "machine_id": 3,
               "process_time": 45,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 6
             },
             {
               "sru_id": 3,
@@ -346,13 +383,13 @@
               "sru_id": 2,
               "machine_id": 2,
               "process_time": 103,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 5
             },
             {
               "sru_id": 3,
               "machine_id": 2,
               "process_time": 95,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -363,7 +400,7 @@
               "sru_id": 2,
               "machine_id": 1,
               "process_time": 71,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 2
             },
             {
               "sru_id": 3,
@@ -380,13 +417,13 @@
               "sru_id": 2,
               "machine_id": 1,
               "process_time": 51,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 3
             },
             {
               "sru_id": 3,
               "machine_id": 1,
               "process_time": 42,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 5
             }
           ]
         },
@@ -403,7 +440,7 @@
               "sru_id": 3,
               "machine_id": 2,
               "process_time": 96,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 6
             }
           ]
         },
@@ -414,7 +451,7 @@
               "sru_id": 2,
               "machine_id": 3,
               "process_time": 81,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 6
             },
             {
               "sru_id": 3,
@@ -432,6 +469,12 @@
               "machine_id": 5,
               "process_time": 28,
               "process_cost_per_time": 2
+            },
+            {
+              "sru_id": 3,
+              "machine_id": 5,
+              "process_time": 28,
+              "process_cost_per_time": 6
             }
           ]
         },
@@ -460,6 +503,12 @@
               "machine_id": 5,
               "process_time": 10,
               "process_cost_per_time": 5
+            },
+            {
+              "sru_id": 3,
+              "machine_id": 5,
+              "process_time": 10,
+              "process_cost_per_time": 5
             }
           ]
         },
@@ -470,13 +519,13 @@
               "sru_id": 2,
               "machine_id": 3,
               "process_time": 22,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 4
             },
             {
               "sru_id": 3,
               "machine_id": 3,
               "process_time": 22,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 4
             }
           ]
         },
@@ -493,7 +542,7 @@
               "sru_id": 3,
               "machine_id": 4,
               "process_time": 77,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 2
             }
           ]
         },
@@ -516,13 +565,13 @@
               "sru_id": 3,
               "machine_id": 2,
               "process_time": 22,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 5
             },
             {
               "sru_id": 3,
               "machine_id": 4,
               "process_time": 18,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 4
             }
           ]
         },
@@ -533,13 +582,13 @@
               "sru_id": 2,
               "machine_id": 2,
               "process_time": 90,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 4
             },
             {
               "sru_id": 3,
               "machine_id": 2,
               "process_time": 82,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 4
             }
           ]
         },
@@ -551,6 +600,12 @@
               "machine_id": 5,
               "process_time": 33,
               "process_cost_per_time": 4
+            },
+            {
+              "sru_id": 3,
+              "machine_id": 5,
+              "process_time": 34,
+              "process_cost_per_time": 5
             }
           ]
         },
@@ -561,7 +616,13 @@
               "sru_id": 2,
               "machine_id": 5,
               "process_time": 61,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 3
+            },
+            {
+              "sru_id": 3,
+              "machine_id": 5,
+              "process_time": 62,
+              "process_cost_per_time": 5
             }
           ]
         },
@@ -572,25 +633,25 @@
               "sru_id": 2,
               "machine_id": 1,
               "process_time": 54,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 5
             },
             {
               "sru_id": 2,
               "machine_id": 2,
               "process_time": 55,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 3
             },
             {
               "sru_id": 3,
               "machine_id": 1,
               "process_time": 45,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 3
             },
             {
               "sru_id": 3,
               "machine_id": 2,
               "process_time": 51,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 2
             }
           ]
         },
@@ -601,13 +662,13 @@
               "sru_id": 2,
               "machine_id": 4,
               "process_time": 52,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 4
             },
             {
               "sru_id": 3,
               "machine_id": 4,
               "process_time": 47,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 6
             }
           ]
         },
@@ -618,7 +679,7 @@
               "sru_id": 2,
               "machine_id": 1,
               "process_time": 43,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 3
             },
             {
               "sru_id": 3,
@@ -635,19 +696,25 @@
               "sru_id": 2,
               "machine_id": 2,
               "process_time": 56,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 3
             },
             {
               "sru_id": 2,
               "machine_id": 5,
               "process_time": 44,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 4
             },
             {
               "sru_id": 3,
               "machine_id": 2,
               "process_time": 52,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 5
+            },
+            {
+              "sru_id": 3,
+              "machine_id": 5,
+              "process_time": 45,
+              "process_cost_per_time": 5
             }
           ]
         },
@@ -658,13 +725,13 @@
               "sru_id": 2,
               "machine_id": 2,
               "process_time": 79,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 6
             },
             {
               "sru_id": 3,
               "machine_id": 2,
               "process_time": 73,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 4
             }
           ]
         }
@@ -682,13 +749,13 @@
               "sru_id": 2,
               "machine_id": 3,
               "process_time": 81,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 6
             },
             {
               "sru_id": 3,
               "machine_id": 3,
               "process_time": 79,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 2
             }
           ]
         },
@@ -699,7 +766,7 @@
               "sru_id": 2,
               "machine_id": 1,
               "process_time": 90,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 3
             },
             {
               "sru_id": 3,
@@ -716,25 +783,25 @@
               "sru_id": 2,
               "machine_id": 3,
               "process_time": 92,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 4
             },
             {
               "sru_id": 2,
               "machine_id": 4,
               "process_time": 78,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 4
             },
             {
               "sru_id": 3,
               "machine_id": 3,
               "process_time": 90,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 2
             },
             {
               "sru_id": 3,
               "machine_id": 4,
               "process_time": 71,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 5
             }
           ]
         },
@@ -745,7 +812,13 @@
               "sru_id": 2,
               "machine_id": 5,
               "process_time": 35,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 6
+            },
+            {
+              "sru_id": 3,
+              "machine_id": 5,
+              "process_time": 36,
+              "process_cost_per_time": 6
             }
           ]
         },
@@ -756,7 +829,13 @@
               "sru_id": 2,
               "machine_id": 5,
               "process_time": 87,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 2
+            },
+            {
+              "sru_id": 3,
+              "machine_id": 5,
+              "process_time": 89,
+              "process_cost_per_time": 4
             }
           ]
         },
@@ -767,7 +846,13 @@
               "sru_id": 2,
               "machine_id": 5,
               "process_time": 63,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 2
+            },
+            {
+              "sru_id": 3,
+              "machine_id": 5,
+              "process_time": 65,
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -778,7 +863,7 @@
               "sru_id": 2,
               "machine_id": 2,
               "process_time": 28,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 5
             },
             {
               "sru_id": 3,
@@ -801,7 +886,7 @@
               "sru_id": 3,
               "machine_id": 2,
               "process_time": 94,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -818,7 +903,7 @@
               "sru_id": 3,
               "machine_id": 3,
               "process_time": 79,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 6
             }
           ]
         },
@@ -829,13 +914,13 @@
               "sru_id": 2,
               "machine_id": 4,
               "process_time": 41,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 6
             },
             {
               "sru_id": 3,
               "machine_id": 4,
               "process_time": 37,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 2
             }
           ]
         },
@@ -852,7 +937,7 @@
               "sru_id": 3,
               "machine_id": 3,
               "process_time": 66,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -863,18 +948,24 @@
               "sru_id": 2,
               "machine_id": 1,
               "process_time": 60,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 2
             },
             {
               "sru_id": 2,
               "machine_id": 5,
               "process_time": 47,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 2
             },
             {
               "sru_id": 3,
               "machine_id": 1,
               "process_time": 50,
+              "process_cost_per_time": 4
+            },
+            {
+              "sru_id": 3,
+              "machine_id": 5,
+              "process_time": 48,
               "process_cost_per_time": 2
             }
           ]
@@ -903,13 +994,13 @@
               "sru_id": 2,
               "machine_id": 1,
               "process_time": 107,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 4
             },
             {
               "sru_id": 3,
               "machine_id": 1,
               "process_time": 90,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 2
             }
           ]
         },
@@ -920,13 +1011,13 @@
               "sru_id": 2,
               "machine_id": 1,
               "process_time": 37,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 3
             },
             {
               "sru_id": 3,
               "machine_id": 1,
               "process_time": 31,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 4
             }
           ]
         },
@@ -937,7 +1028,13 @@
               "sru_id": 2,
               "machine_id": 5,
               "process_time": 53,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 2
+            },
+            {
+              "sru_id": 3,
+              "machine_id": 5,
+              "process_time": 54,
+              "process_cost_per_time": 5
             }
           ]
         },
@@ -948,13 +1045,13 @@
               "sru_id": 2,
               "machine_id": 2,
               "process_time": 78,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 4
             },
             {
               "sru_id": 3,
               "machine_id": 2,
               "process_time": 72,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 4
             }
           ]
         },
@@ -965,7 +1062,13 @@
               "sru_id": 2,
               "machine_id": 5,
               "process_time": 54,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 2
+            },
+            {
+              "sru_id": 3,
+              "machine_id": 5,
+              "process_time": 56,
+              "process_cost_per_time": 4
             }
           ]
         },
@@ -982,7 +1085,7 @@
               "sru_id": 3,
               "machine_id": 1,
               "process_time": 53,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 4
             }
           ]
         },
@@ -993,13 +1096,13 @@
               "sru_id": 2,
               "machine_id": 2,
               "process_time": 32,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 5
             },
             {
               "sru_id": 3,
               "machine_id": 2,
               "process_time": 29,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 4
             }
           ]
         },
@@ -1010,13 +1113,13 @@
               "sru_id": 2,
               "machine_id": 4,
               "process_time": 17,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 6
             },
             {
               "sru_id": 3,
               "machine_id": 4,
               "process_time": 15,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 6
             }
           ]
         },
@@ -1027,13 +1130,13 @@
               "sru_id": 2,
               "machine_id": 4,
               "process_time": 33,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 5
             },
             {
               "sru_id": 3,
               "machine_id": 4,
               "process_time": 30,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 2
             }
           ]
         },
@@ -1044,13 +1147,13 @@
               "sru_id": 2,
               "machine_id": 1,
               "process_time": 82,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 6
             },
             {
               "sru_id": 3,
               "machine_id": 1,
               "process_time": 69,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 5
             }
           ]
         }
@@ -1068,13 +1171,13 @@
               "sru_id": 1,
               "machine_id": 3,
               "process_time": 67,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 6
             },
             {
               "sru_id": 1,
               "machine_id": 4,
               "process_time": 69,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 6
             }
           ]
         },
@@ -1085,7 +1188,7 @@
               "sru_id": 1,
               "machine_id": 3,
               "process_time": 60,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 6
             }
           ]
         },
@@ -1096,7 +1199,7 @@
               "sru_id": 1,
               "machine_id": 2,
               "process_time": 64,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -1107,7 +1210,7 @@
               "sru_id": 1,
               "machine_id": 1,
               "process_time": 44,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -1118,7 +1221,7 @@
               "sru_id": 1,
               "machine_id": 1,
               "process_time": 56,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -1129,7 +1232,7 @@
               "sru_id": 1,
               "machine_id": 3,
               "process_time": 51,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 2
             }
           ]
         },
@@ -1140,7 +1243,7 @@
               "sru_id": 1,
               "machine_id": 3,
               "process_time": 59,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 5
             }
           ]
         },
@@ -1151,7 +1254,7 @@
               "sru_id": 1,
               "machine_id": 2,
               "process_time": 92,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 2
             }
           ]
         },
@@ -1162,7 +1265,7 @@
               "sru_id": 1,
               "machine_id": 1,
               "process_time": 28,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 6
             }
           ]
         },
@@ -1173,7 +1276,7 @@
               "sru_id": 1,
               "machine_id": 3,
               "process_time": 54,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 2
             }
           ]
         },
@@ -1184,7 +1287,7 @@
               "sru_id": 1,
               "machine_id": 4,
               "process_time": 15,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 2
             }
           ]
         },
@@ -1195,7 +1298,7 @@
               "sru_id": 1,
               "machine_id": 3,
               "process_time": 52,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -1228,7 +1331,7 @@
               "sru_id": 1,
               "machine_id": 4,
               "process_time": 28,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 6
             }
           ]
         },
@@ -1239,7 +1342,7 @@
               "sru_id": 1,
               "machine_id": 2,
               "process_time": 81,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 6
             }
           ]
         },
@@ -1250,7 +1353,7 @@
               "sru_id": 1,
               "machine_id": 5,
               "process_time": 45,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -1285,13 +1388,13 @@
               "sru_id": 2,
               "machine_id": 2,
               "process_time": 109,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 2
             },
             {
               "sru_id": 3,
               "machine_id": 2,
               "process_time": 100,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -1302,7 +1405,7 @@
               "sru_id": 2,
               "machine_id": 2,
               "process_time": 78,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 5
             },
             {
               "sru_id": 3,
@@ -1319,13 +1422,13 @@
               "sru_id": 2,
               "machine_id": 4,
               "process_time": 86,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 4
             },
             {
               "sru_id": 3,
               "machine_id": 4,
               "process_time": 77,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 4
             }
           ]
         },
@@ -1336,25 +1439,25 @@
               "sru_id": 2,
               "machine_id": 2,
               "process_time": 49,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 4
             },
             {
               "sru_id": 2,
               "machine_id": 4,
               "process_time": 40,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 6
             },
             {
               "sru_id": 3,
               "machine_id": 2,
               "process_time": 45,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 3
             },
             {
               "sru_id": 3,
               "machine_id": 4,
               "process_time": 37,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 4
             }
           ]
         },
@@ -1365,13 +1468,13 @@
               "sru_id": 2,
               "machine_id": 3,
               "process_time": 35,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 4
             },
             {
               "sru_id": 3,
               "machine_id": 3,
               "process_time": 35,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 6
             }
           ]
         },
@@ -1382,18 +1485,24 @@
               "sru_id": 2,
               "machine_id": 2,
               "process_time": 62,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 2
             },
             {
               "sru_id": 2,
               "machine_id": 5,
               "process_time": 48,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 5
             },
             {
               "sru_id": 3,
               "machine_id": 2,
               "process_time": 57,
+              "process_cost_per_time": 2
+            },
+            {
+              "sru_id": 3,
+              "machine_id": 5,
+              "process_time": 49,
               "process_cost_per_time": 6
             }
           ]
@@ -1411,19 +1520,19 @@
               "sru_id": 2,
               "machine_id": 4,
               "process_time": 87,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 5
             },
             {
               "sru_id": 3,
               "machine_id": 3,
               "process_time": 99,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 6
             },
             {
               "sru_id": 3,
               "machine_id": 4,
               "process_time": 78,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -1434,13 +1543,13 @@
               "sru_id": 2,
               "machine_id": 2,
               "process_time": 46,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 5
             },
             {
               "sru_id": 3,
               "machine_id": 2,
               "process_time": 42,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 4
             }
           ]
         },
@@ -1451,13 +1560,13 @@
               "sru_id": 2,
               "machine_id": 3,
               "process_time": 93,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 2
             },
             {
               "sru_id": 3,
               "machine_id": 3,
               "process_time": 91,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 5
             }
           ]
         },
@@ -1474,7 +1583,7 @@
               "sru_id": 3,
               "machine_id": 3,
               "process_time": 41,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 5
             }
           ]
         },
@@ -1491,7 +1600,7 @@
               "sru_id": 3,
               "machine_id": 2,
               "process_time": 99,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 4
             }
           ]
         },
@@ -1502,13 +1611,13 @@
               "sru_id": 2,
               "machine_id": 2,
               "process_time": 72,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 6
             },
             {
               "sru_id": 3,
               "machine_id": 2,
               "process_time": 66,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 5
             }
           ]
         },
@@ -1536,6 +1645,12 @@
               "sru_id": 2,
               "machine_id": 5,
               "process_time": 40,
+              "process_cost_per_time": 3
+            },
+            {
+              "sru_id": 3,
+              "machine_id": 5,
+              "process_time": 41,
               "process_cost_per_time": 2
             }
           ]
@@ -1547,13 +1662,13 @@
               "sru_id": 2,
               "machine_id": 2,
               "process_time": 32,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 3
             },
             {
               "sru_id": 3,
               "machine_id": 2,
               "process_time": 29,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -1564,13 +1679,13 @@
               "sru_id": 2,
               "machine_id": 4,
               "process_time": 55,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 3
             },
             {
               "sru_id": 3,
               "machine_id": 4,
               "process_time": 50,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -1587,7 +1702,7 @@
               "sru_id": 3,
               "machine_id": 4,
               "process_time": 83,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 2
             }
           ]
         },
@@ -1604,7 +1719,7 @@
               "sru_id": 3,
               "machine_id": 2,
               "process_time": 73,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 2
             }
           ]
         },
@@ -1615,13 +1730,13 @@
               "sru_id": 2,
               "machine_id": 2,
               "process_time": 70,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 2
             },
             {
               "sru_id": 3,
               "machine_id": 2,
               "process_time": 64,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -1632,6 +1747,12 @@
               "sru_id": 2,
               "machine_id": 5,
               "process_time": 87,
+              "process_cost_per_time": 3
+            },
+            {
+              "sru_id": 3,
+              "machine_id": 5,
+              "process_time": 89,
               "process_cost_per_time": 5
             }
           ]
@@ -1649,7 +1770,7 @@
               "sru_id": 3,
               "machine_id": 4,
               "process_time": 36,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 2
             }
           ]
         }
@@ -1678,7 +1799,7 @@
               "sru_id": 1,
               "machine_id": 2,
               "process_time": 67,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 6
             },
             {
               "sru_id": 1,
@@ -1695,7 +1816,7 @@
               "sru_id": 1,
               "machine_id": 2,
               "process_time": 82,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 2
             },
             {
               "sru_id": 1,
@@ -1729,7 +1850,7 @@
               "sru_id": 1,
               "machine_id": 5,
               "process_time": 19,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 5
             }
           ]
         },
@@ -1751,7 +1872,7 @@
               "sru_id": 1,
               "machine_id": 2,
               "process_time": 28,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 2
             }
           ]
         },
@@ -1762,7 +1883,7 @@
               "sru_id": 1,
               "machine_id": 3,
               "process_time": 17,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 2
             }
           ]
         },
@@ -1773,7 +1894,7 @@
               "sru_id": 1,
               "machine_id": 3,
               "process_time": 85,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 2
             }
           ]
         },
@@ -1784,7 +1905,7 @@
               "sru_id": 1,
               "machine_id": 1,
               "process_time": 87,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 4
             }
           ]
         },
@@ -1795,7 +1916,7 @@
               "sru_id": 1,
               "machine_id": 1,
               "process_time": 67,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 5
             }
           ]
         },
@@ -1806,7 +1927,7 @@
               "sru_id": 1,
               "machine_id": 3,
               "process_time": 14,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 4
             }
           ]
         },
@@ -1817,7 +1938,7 @@
               "sru_id": 1,
               "machine_id": 4,
               "process_time": 76,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -1839,7 +1960,7 @@
               "sru_id": 1,
               "machine_id": 5,
               "process_time": 82,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 6
             }
           ]
         }
@@ -1857,7 +1978,7 @@
               "sru_id": 1,
               "machine_id": 3,
               "process_time": 35,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 6
             }
           ]
         },
@@ -1868,7 +1989,7 @@
               "sru_id": 1,
               "machine_id": 3,
               "process_time": 85,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 4
             }
           ]
         },
@@ -1879,7 +2000,7 @@
               "sru_id": 1,
               "machine_id": 2,
               "process_time": 23,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 2
             }
           ]
         },
@@ -1890,7 +2011,7 @@
               "sru_id": 1,
               "machine_id": 2,
               "process_time": 32,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 6
             }
           ]
         },
@@ -1901,7 +2022,7 @@
               "sru_id": 1,
               "machine_id": 1,
               "process_time": 92,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 5
             }
           ]
         },
@@ -1923,7 +2044,7 @@
               "sru_id": 1,
               "machine_id": 2,
               "process_time": 88,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 5
             }
           ]
         },
@@ -1934,7 +2055,7 @@
               "sru_id": 1,
               "machine_id": 1,
               "process_time": 49,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 5
             }
           ]
         },
@@ -1945,13 +2066,13 @@
               "sru_id": 1,
               "machine_id": 2,
               "process_time": 33,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 5
             },
             {
               "sru_id": 1,
               "machine_id": 5,
               "process_time": 38,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 4
             }
           ]
         },
@@ -1962,7 +2083,7 @@
               "sru_id": 1,
               "machine_id": 1,
               "process_time": 47,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 5
             }
           ]
         },
@@ -1973,7 +2094,7 @@
               "sru_id": 1,
               "machine_id": 4,
               "process_time": 55,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 4
             }
           ]
         },
@@ -1984,7 +2105,7 @@
               "sru_id": 1,
               "machine_id": 1,
               "process_time": 59,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 4
             }
           ]
         },
@@ -1995,7 +2116,7 @@
               "sru_id": 1,
               "machine_id": 1,
               "process_time": 98,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 5
             }
           ]
         },
@@ -2028,7 +2149,7 @@
               "sru_id": 1,
               "machine_id": 1,
               "process_time": 10,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 6
             }
           ]
         },
@@ -2039,7 +2160,7 @@
               "sru_id": 1,
               "machine_id": 2,
               "process_time": 31,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 4
             }
           ]
         }
@@ -2057,7 +2178,7 @@
               "sru_id": 1,
               "machine_id": 3,
               "process_time": 47,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 6
             }
           ]
         },
@@ -2068,7 +2189,7 @@
               "sru_id": 1,
               "machine_id": 2,
               "process_time": 52,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 2
             }
           ]
         },
@@ -2079,7 +2200,7 @@
               "sru_id": 1,
               "machine_id": 4,
               "process_time": 17,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 5
             }
           ]
         },
@@ -2090,7 +2211,7 @@
               "sru_id": 1,
               "machine_id": 4,
               "process_time": 49,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 5
             }
           ]
         },
@@ -2101,7 +2222,7 @@
               "sru_id": 1,
               "machine_id": 2,
               "process_time": 86,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 5
             }
           ]
         },
@@ -2112,7 +2233,7 @@
               "sru_id": 1,
               "machine_id": 5,
               "process_time": 52,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 2
             }
           ]
         },
@@ -2123,13 +2244,13 @@
               "sru_id": 1,
               "machine_id": 2,
               "process_time": 72,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 5
             },
             {
               "sru_id": 1,
               "machine_id": 5,
               "process_time": 82,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -2140,13 +2261,13 @@
               "sru_id": 1,
               "machine_id": 2,
               "process_time": 29,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 2
             },
             {
               "sru_id": 1,
               "machine_id": 5,
               "process_time": 34,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -2157,7 +2278,7 @@
               "sru_id": 1,
               "machine_id": 2,
               "process_time": 47,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 6
             }
           ]
         },
@@ -2168,7 +2289,7 @@
               "sru_id": 1,
               "machine_id": 2,
               "process_time": 49,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 6
             }
           ]
         },
@@ -2179,7 +2300,7 @@
               "sru_id": 1,
               "machine_id": 5,
               "process_time": 42,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 4
             }
           ]
         },
@@ -2190,7 +2311,7 @@
               "sru_id": 1,
               "machine_id": 2,
               "process_time": 74,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 5
             }
           ]
         },
@@ -2201,7 +2322,7 @@
               "sru_id": 1,
               "machine_id": 1,
               "process_time": 36,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -2212,7 +2333,7 @@
               "sru_id": 1,
               "machine_id": 1,
               "process_time": 71,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -2223,7 +2344,7 @@
               "sru_id": 1,
               "machine_id": 2,
               "process_time": 65,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 6
             }
           ]
         },
@@ -2245,13 +2366,13 @@
               "sru_id": 1,
               "machine_id": 1,
               "process_time": 17,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 6
             },
             {
               "sru_id": 1,
               "machine_id": 2,
               "process_time": 17,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -2262,7 +2383,7 @@
               "sru_id": 1,
               "machine_id": 4,
               "process_time": 27,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -2273,7 +2394,7 @@
               "sru_id": 1,
               "machine_id": 4,
               "process_time": 37,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 6
             }
           ]
         },
@@ -2284,7 +2405,7 @@
               "sru_id": 1,
               "machine_id": 1,
               "process_time": 94,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -2295,7 +2416,7 @@
               "sru_id": 1,
               "machine_id": 5,
               "process_time": 66,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 5
             }
           ]
         },
@@ -2306,7 +2427,7 @@
               "sru_id": 1,
               "machine_id": 2,
               "process_time": 35,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 2
             }
           ]
         },
@@ -2328,7 +2449,7 @@
               "sru_id": 1,
               "machine_id": 3,
               "process_time": 18,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 6
             }
           ]
         },
@@ -2357,7 +2478,7 @@
               "sru_id": 1,
               "machine_id": 4,
               "process_time": 58,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 6
             },
             {
               "sru_id": 1,
@@ -2374,7 +2495,7 @@
               "sru_id": 1,
               "machine_id": 3,
               "process_time": 50,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 5
             }
           ]
         },
@@ -2396,7 +2517,7 @@
               "sru_id": 1,
               "machine_id": 5,
               "process_time": 41,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -2407,7 +2528,7 @@
               "sru_id": 1,
               "machine_id": 1,
               "process_time": 45,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -2418,7 +2539,7 @@
               "sru_id": 1,
               "machine_id": 1,
               "process_time": 82,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 6
             }
           ]
         },
@@ -2429,13 +2550,13 @@
               "sru_id": 1,
               "machine_id": 3,
               "process_time": 36,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 2
             },
             {
               "sru_id": 1,
               "machine_id": 4,
               "process_time": 37,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 6
             }
           ]
         },
@@ -2468,7 +2589,7 @@
               "sru_id": 1,
               "machine_id": 4,
               "process_time": 67,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -2479,7 +2600,7 @@
               "sru_id": 1,
               "machine_id": 5,
               "process_time": 39,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 4
             }
           ]
         },
@@ -2490,7 +2611,7 @@
               "sru_id": 1,
               "machine_id": 2,
               "process_time": 77,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 2
             }
           ]
         },
@@ -2501,7 +2622,7 @@
               "sru_id": 1,
               "machine_id": 2,
               "process_time": 42,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 6
             }
           ]
         },
@@ -2512,7 +2633,7 @@
               "sru_id": 1,
               "machine_id": 3,
               "process_time": 66,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 4
             }
           ]
         },
@@ -2529,7 +2650,7 @@
               "sru_id": 1,
               "machine_id": 5,
               "process_time": 47,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 2
             }
           ]
         },
@@ -2540,7 +2661,7 @@
               "sru_id": 1,
               "machine_id": 2,
               "process_time": 18,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -2551,7 +2672,7 @@
               "sru_id": 1,
               "machine_id": 1,
               "process_time": 63,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 4
             }
           ]
         },
@@ -2562,7 +2683,7 @@
               "sru_id": 1,
               "machine_id": 1,
               "process_time": 99,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -2573,7 +2694,7 @@
               "sru_id": 1,
               "machine_id": 4,
               "process_time": 14,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 6
             }
           ]
         },
@@ -2584,7 +2705,7 @@
               "sru_id": 1,
               "machine_id": 3,
               "process_time": 29,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 5
             }
           ]
         },
@@ -2595,13 +2716,13 @@
               "sru_id": 1,
               "machine_id": 3,
               "process_time": 85,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 5
             },
             {
               "sru_id": 1,
               "machine_id": 4,
               "process_time": 88,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -2612,7 +2733,7 @@
               "sru_id": 1,
               "machine_id": 5,
               "process_time": 98,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 5
             }
           ]
         },
@@ -2641,7 +2762,7 @@
               "sru_id": 2,
               "machine_id": 4,
               "process_time": 76,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 4
             },
             {
               "sru_id": 3,
@@ -2658,7 +2779,7 @@
               "sru_id": 2,
               "machine_id": 2,
               "process_time": 47,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 3
             },
             {
               "sru_id": 3,
@@ -2675,13 +2796,13 @@
               "sru_id": 2,
               "machine_id": 1,
               "process_time": 65,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 2
             },
             {
               "sru_id": 3,
               "machine_id": 1,
               "process_time": 55,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 2
             }
           ]
         },
@@ -2692,7 +2813,13 @@
               "sru_id": 2,
               "machine_id": 5,
               "process_time": 51,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 5
+            },
+            {
+              "sru_id": 3,
+              "machine_id": 5,
+              "process_time": 52,
+              "process_cost_per_time": 6
             }
           ]
         },
@@ -2709,7 +2836,7 @@
               "sru_id": 3,
               "machine_id": 3,
               "process_time": 32,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -2720,7 +2847,13 @@
               "sru_id": 2,
               "machine_id": 5,
               "process_time": 53,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 5
+            },
+            {
+              "sru_id": 3,
+              "machine_id": 5,
+              "process_time": 55,
+              "process_cost_per_time": 4
             }
           ]
         },
@@ -2731,13 +2864,13 @@
               "sru_id": 2,
               "machine_id": 2,
               "process_time": 60,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 2
             },
             {
               "sru_id": 3,
               "machine_id": 2,
               "process_time": 55,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 2
             }
           ]
         },
@@ -2748,13 +2881,13 @@
               "sru_id": 2,
               "machine_id": 1,
               "process_time": 103,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 6
             },
             {
               "sru_id": 3,
               "machine_id": 1,
               "process_time": 87,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 2
             }
           ]
         },
@@ -2782,7 +2915,7 @@
               "sru_id": 2,
               "machine_id": 2,
               "process_time": 92,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 3
             },
             {
               "sru_id": 3,
@@ -2799,7 +2932,7 @@
               "sru_id": 2,
               "machine_id": 3,
               "process_time": 47,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 3
             },
             {
               "sru_id": 3,
@@ -2816,13 +2949,13 @@
               "sru_id": 2,
               "machine_id": 2,
               "process_time": 38,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 6
             },
             {
               "sru_id": 3,
               "machine_id": 2,
               "process_time": 35,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 4
             }
           ]
         },
@@ -2839,7 +2972,7 @@
               "sru_id": 3,
               "machine_id": 1,
               "process_time": 38,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -2850,13 +2983,13 @@
               "sru_id": 2,
               "machine_id": 4,
               "process_time": 75,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 2
             },
             {
               "sru_id": 3,
               "machine_id": 4,
               "process_time": 68,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 5
             }
           ]
         },
@@ -2867,7 +3000,7 @@
               "sru_id": 2,
               "machine_id": 1,
               "process_time": 81,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 6
             },
             {
               "sru_id": 3,
@@ -2884,13 +3017,13 @@
               "sru_id": 2,
               "machine_id": 4,
               "process_time": 60,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 2
             },
             {
               "sru_id": 3,
               "machine_id": 4,
               "process_time": 54,
-              "process_cost_per_time": 6
+              "process_cost_per_time": 5
             }
           ]
         },
@@ -2901,7 +3034,13 @@
               "sru_id": 2,
               "machine_id": 5,
               "process_time": 69,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 3
+            },
+            {
+              "sru_id": 3,
+              "machine_id": 5,
+              "process_time": 70,
+              "process_cost_per_time": 3
             }
           ]
         },
@@ -2912,13 +3051,13 @@
               "sru_id": 2,
               "machine_id": 3,
               "process_time": 25,
-              "process_cost_per_time": 3
+              "process_cost_per_time": 6
             },
             {
               "sru_id": 3,
               "machine_id": 3,
               "process_time": 25,
-              "process_cost_per_time": 5
+              "process_cost_per_time": 2
             }
           ]
         },
@@ -2929,13 +3068,13 @@
               "sru_id": 2,
               "machine_id": 4,
               "process_time": 47,
-              "process_cost_per_time": 4
+              "process_cost_per_time": 5
             },
             {
               "sru_id": 3,
               "machine_id": 4,
               "process_time": 43,
-              "process_cost_per_time": 2
+              "process_cost_per_time": 5
             }
           ]
         }
@@ -2972,7 +3111,8 @@
         1,
         2,
         3,
-        4
+        4,
+        5
       ]
     }
   ],
@@ -2980,52 +3120,52 @@
     {
       "job_id": 1,
       "sru_id": 2,
-      "value": 3
+      "value": 9
     },
     {
       "job_id": 1,
       "sru_id": 3,
-      "value": 6
+      "value": 16
     },
     {
       "job_id": 2,
       "sru_id": 2,
-      "value": 8
-    },
-    {
-      "job_id": 2,
-      "sru_id": 3,
       "value": 18
     },
     {
+      "job_id": 2,
+      "sru_id": 3,
+      "value": 20
+    },
+    {
       "job_id": 3,
       "sru_id": 2,
-      "value": 8
+      "value": 21
     },
     {
       "job_id": 3,
       "sru_id": 3,
-      "value": 16
+      "value": 22
     },
     {
       "job_id": 4,
       "sru_id": 1,
-      "value": 6
+      "value": 3
     },
     {
       "job_id": 5,
       "sru_id": 2,
-      "value": 16
+      "value": 17
     },
     {
       "job_id": 5,
       "sru_id": 3,
-      "value": 5
+      "value": 12
     },
     {
       "job_id": 6,
       "sru_id": 1,
-      "value": 20
+      "value": 12
     },
     {
       "job_id": 7,
@@ -3035,84 +3175,84 @@
     {
       "job_id": 8,
       "sru_id": 1,
-      "value": 5
+      "value": 18
     },
     {
       "job_id": 9,
       "sru_id": 1,
-      "value": 16
+      "value": 21
     },
     {
       "job_id": 10,
       "sru_id": 2,
-      "value": 13
+      "value": 24
     },
     {
       "job_id": 10,
       "sru_id": 3,
-      "value": 16
+      "value": 24
     }
   ],
   "transport_cost_per_time": [
     {
       "job_id": 1,
       "sru_id": 2,
-      "value": 6
+      "value": 4
     },
     {
       "job_id": 1,
       "sru_id": 3,
-      "value": 4
+      "value": 5
     },
     {
       "job_id": 2,
       "sru_id": 2,
-      "value": 3
+      "value": 2
     },
     {
       "job_id": 2,
       "sru_id": 3,
-      "value": 3
+      "value": 2
     },
     {
       "job_id": 3,
       "sru_id": 2,
-      "value": 6
+      "value": 5
     },
     {
       "job_id": 3,
       "sru_id": 3,
-      "value": 4
+      "value": 2
     },
     {
       "job_id": 4,
       "sru_id": 1,
-      "value": 2
+      "value": 6
     },
     {
       "job_id": 5,
       "sru_id": 2,
-      "value": 6
+      "value": 5
     },
     {
       "job_id": 5,
       "sru_id": 3,
-      "value": 2
+      "value": 6
     },
     {
       "job_id": 6,
       "sru_id": 1,
-      "value": 3
+      "value": 6
     },
     {
       "job_id": 7,
       "sru_id": 1,
-      "value": 6
+      "value": 4
     },
     {
       "job_id": 8,
       "sru_id": 1,
-      "value": 5
+      "value": 2
     },
     {
       "job_id": 9,
@@ -3122,7 +3262,7 @@
     {
       "job_id": 10,
       "sru_id": 2,
-      "value": 5
+      "value": 6
     },
     {
       "job_id": 10,

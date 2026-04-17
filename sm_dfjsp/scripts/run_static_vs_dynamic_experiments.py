@@ -3,23 +3,33 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import math
 import time
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence, Tuple
+from typing import Dict, List, Sequence, Tuple
 
 import matplotlib.pyplot as plt
 import yaml
 
-from smdfjsp.core.types import Job, RollingConfig, SMDFJSPInstance, ScheduleRecord
+from smdfjsp.core.types import DecodeContext, Job, RollingConfig, SMDFJSPInstance, ScheduleRecord
 from smdfjsp.data.io import load_instance_json
 from smdfjsp.eda_ts import EDATS, EDATSConfig
 from smdfjsp.model.evaluator import evaluate_individual
+from smdfjsp.model.feasibility import assert_schedule_feasible
 from smdfjsp.rolling import RollingScheduler, build_remaining_subproblem, lift_records_from_subproblem
 
 
 METHOD_ORACLE = "static_full_information_oracle"
 METHOD_STATIC_BASELINE = "static_no_reschedule_baseline"
 METHOD_DYNAMIC = "dynamic_rolling_method"
+
+
+def _render_bar(done: int, total: int, width: int = 36) -> str:
+    if total <= 0:
+        return "[" + "-" * width + "] 0/0"
+    ratio = max(0.0, min(1.0, done / total))
+    fill = int(round(width * ratio))
+    return f"[{'#' * fill}{'-' * (width - fill)}] {done}/{total} ({ratio * 100:5.1f}%)"
 
 
 def _clone_instance_with_release(instance: SMDFJSPInstance, release_time_value: float) -> SMDFJSPInstance:
@@ -76,6 +86,29 @@ def _pick_best_solution_records(instance: SMDFJSPInstance, cfg: EDATSConfig) -> 
     best = min(candidates, key=lambda s: (s.objectives[0], s.objectives[1]))  # type: ignore[index]
     ev = evaluate_individual(instance, best)
     return ev.records, dict(best.ua)
+
+
+def _build_subproblem_decode_context(
+    sub_instance: SMDFJSPInstance,
+    machine_ready: Dict[Tuple[int, int], float],
+    job_ready: Dict[int, float],
+    current_time: float,
+) -> DecodeContext:
+    # Inject current resource occupation into subproblem decoding to prevent
+    # overlap with already running/frozen operations across rolling windows.
+    eligible = {j.job_id for j in sub_instance.jobs}
+    sub_job_ready = {j.job_id: float(job_ready.get(j.job_id, 0.0)) for j in sub_instance.jobs}
+    return DecodeContext(
+        current_time=float(current_time),
+        eligible_job_ids=eligible,
+        completed_ops_by_job={j.job_id: 0 for j in sub_instance.jobs},
+        in_progress_ops={},
+        frozen_job_ready=sub_job_ready,
+        frozen_machine_ready=dict(machine_ready),
+        frozen_records=[],
+        frozen_ua_by_job={},
+        include_transport_for_incomplete_jobs=False,
+    )
 
 
 def _compatible_srus_for_job(job: Job, instance: SMDFJSPInstance) -> List[int]:
@@ -186,12 +219,59 @@ def _summary_from_records(
     }
 
 
-def _plot_gantt(records: List[ScheduleRecord], title: str, out_path: Path) -> None:
+def _fmt_metric(x: object, digits: int = 3) -> str:
+    try:
+        v = float(x)  # type: ignore[arg-type]
+    except (TypeError, ValueError):
+        return str(x)
+    if not math.isfinite(v):
+        return "inf"
+    return f"{v:.{digits}f}"
+
+
+def _build_gantt_metrics_lines(records: List[ScheduleRecord], summary: Dict[str, object]) -> List[str]:
+    lines = [
+        f"ops={len(records)}",
+        f"jobs={len({r.job_id for r in records})}",
+        f"lanes={len({(r.sru_id, r.machine_id) for r in records})}",
+    ]
+    lines.extend(
+        [
+            f"makespan={_fmt_metric(summary.get('makespan'))}",
+            f"total_cost={_fmt_metric(summary.get('total_cost'))}",
+            f"avg_response={_fmt_metric(summary.get('avg_response_time'))}",
+            f"avg_flow={_fmt_metric(summary.get('avg_flow_time'))}",
+            f"reschedules={int(summary.get('reschedule_count', 0))}",
+            f"runtime_s={_fmt_metric(summary.get('runtime_seconds'))}",
+            f"completeness={int(summary.get('scheduled_jobs', 0))}/{int(summary.get('total_jobs', 0))}",
+            f"is_complete={bool(summary.get('is_complete', False))}",
+        ]
+    )
+    return lines
+
+
+def _plot_gantt(
+    records: List[ScheduleRecord],
+    title: str,
+    out_path: Path,
+    summary: Dict[str, object],
+) -> None:
     out_path.parent.mkdir(parents=True, exist_ok=True)
+    metrics_lines = _build_gantt_metrics_lines(records, summary)
     lanes = sorted({(r.sru_id, r.machine_id) for r in records}, key=lambda x: (x[0], x[1]))
     if not lanes:
         fig, ax = plt.subplots(figsize=(8, 4), dpi=140)
         ax.set_title(title + " (no records)")
+        ax.text(
+            0.03,
+            0.95,
+            "\n".join(metrics_lines),
+            transform=ax.transAxes,
+            va="top",
+            ha="left",
+            fontsize=8,
+            bbox={"facecolor": "#f5f5f5", "edgecolor": "#999999", "boxstyle": "round,pad=0.35"},
+        )
         ax.axis("off")
         fig.tight_layout()
         fig.savefig(out_path)
@@ -223,7 +303,17 @@ def _plot_gantt(records: List[ScheduleRecord], title: str, out_path: Path) -> No
     ax.set_ylabel("SRU-Machine")
     ax.set_title(title)
     ax.grid(axis="x", linestyle="--", alpha=0.25)
-    fig.tight_layout()
+    ax.text(
+        1.01,
+        1.0,
+        "\n".join(metrics_lines),
+        transform=ax.transAxes,
+        va="top",
+        ha="left",
+        fontsize=8,
+        bbox={"facecolor": "#f5f5f5", "edgecolor": "#999999", "boxstyle": "round,pad=0.35"},
+    )
+    fig.tight_layout(rect=(0.0, 0.0, 0.84, 1.0))
     fig.savefig(out_path)
     plt.close(fig)
 
@@ -236,6 +326,12 @@ def _run_static_full_information_oracle(
     t0 = time.perf_counter()
     oracle_inst = _clone_instance_with_release(instance, release_time_value=0.0)
     recs, ua = _pick_best_solution_records(oracle_inst, edats_cfg)
+    assert_schedule_feasible(
+        instance=oracle_inst,
+        records=recs,
+        require_complete=True,
+        context=METHOD_ORACLE,
+    )
     rt = time.perf_counter() - t0
     summary = _summary_from_records(
         instance=oracle_inst,
@@ -318,6 +414,12 @@ def _run_static_no_reschedule_baseline(
             cur = best_en
         job_ready[job.job_id] = cur
 
+    assert_schedule_feasible(
+        instance=instance,
+        records=all_records,
+        require_complete=True,
+        context=METHOD_STATIC_BASELINE,
+    )
     rt = time.perf_counter() - t0
     summary = _summary_from_records(
         instance=instance,
@@ -348,22 +450,58 @@ def _run_dynamic_rolling_method(
     rolling_cfg: RollingConfig,
     seed: int,
     until_time: float,
+    show_progress: bool = True,
 ) -> Tuple[Dict[str, object], List[ScheduleRecord]]:
     t0 = time.perf_counter()
     reschedule_count = 0
 
+    # Approximate upper bound for replan opportunities.
+    scheduler_preview = RollingScheduler(instance=instance, callback=lambda *_: [], cfg=rolling_cfg, start_time=0.0)
+    planned_triggers = len(scheduler_preview._build_trigger_times(until_time=float(until_time)))  # noqa: SLF001
+
     def callback(full_instance: SMDFJSPInstance, state) -> List[ScheduleRecord]:
         nonlocal reschedule_count
         reschedule_count += 1
+        if show_progress:
+            print(
+                "[dynamic] "
+                + _render_bar(min(reschedule_count, planned_triggers), planned_triggers)
+                + f" reschedules={reschedule_count}"
+            )
         sub = build_remaining_subproblem(full_instance, state)
         if not sub.instance.jobs:
             return []
-        sub_records, _ = _pick_best_solution_records(sub.instance, edats_cfg)
+        decode_ctx = _build_subproblem_decode_context(
+            sub_instance=sub.instance,
+            machine_ready=state.machine_ready,
+            job_ready=state.job_ready,
+            current_time=state.current_time,
+        )
+        algo = EDATS(sub.instance, edats_cfg)
+        rr = algo.run(eval_ctx=decode_ctx)
+        candidates = [x for x in rr.nd_solutions if x.objectives is not None]
+        if not candidates:
+            return []
+        best = min(candidates, key=lambda s: (s.objectives[0], s.objectives[1]))  # type: ignore[index]
+        sub_records = evaluate_individual(sub.instance, best, ctx=decode_ctx).records
+        assert_schedule_feasible(
+            instance=sub.instance,
+            records=sub_records,
+            require_complete=False,
+            context=f"{METHOD_DYNAMIC}:subproblem_t{state.current_time:.6f}",
+        )
         return lift_records_from_subproblem(sub_records, sub.op_offset_by_job)
 
     scheduler = RollingScheduler(instance=instance, callback=callback, cfg=rolling_cfg, start_time=0.0)
     state = scheduler.run(until_time=until_time)
     final_records = sorted(state.frozen_records, key=lambda r: (r.start, r.end, r.job_id, r.op_id))
+    require_complete = len(state.completed_jobs) == len(instance.jobs)
+    assert_schedule_feasible(
+        instance=instance,
+        records=final_records,
+        require_complete=require_complete,
+        context=METHOD_DYNAMIC,
+    )
     assignment_by_job = dict(state.frozen_ua_by_job)
     for rec in final_records:
         assignment_by_job.setdefault(rec.job_id, rec.sru_id)
@@ -403,8 +541,14 @@ def main() -> None:
     parser.add_argument("--rolling-interval", type=float, default=None, help="Override rolling periodic interval")
     parser.add_argument("--dynamic-enabled", action="store_true", help="Enable dynamic rolling method")
     parser.add_argument("--disable-dynamic", action="store_true", help="Disable dynamic rolling method")
+    parser.add_argument(
+        "--only-oracle",
+        action="store_true",
+        help=f"Run only {METHOD_ORACLE} and skip other methods.",
+    )
     parser.add_argument("--out-dir", default=None, help="Override output directory")
     parser.add_argument("--until-time", type=float, default=None, help="Override rolling horizon")
+    parser.add_argument("--no-progress", action="store_true", help="Disable progress bars")
     args = parser.parse_args()
 
     root = Path(__file__).resolve().parents[1]
@@ -435,19 +579,40 @@ def main() -> None:
 
     rows: List[Dict[str, object]] = []
     records_by_method: Dict[str, List[ScheduleRecord]] = {}
+    total_methods = 1 + (0 if args.only_oracle else 1) + (0 if args.only_oracle or not dynamic_enabled else 1)
+    done_methods = 0
+    if not args.no_progress:
+        print("Overall Progress " + _render_bar(done_methods, total_methods))
 
     row_o, rec_o = _run_static_full_information_oracle(instance, edats_cfg, seed)
     rows.append(row_o)
     records_by_method[METHOD_ORACLE] = rec_o
+    done_methods += 1
+    if not args.no_progress:
+        print("Overall Progress " + _render_bar(done_methods, total_methods))
 
-    row_b, rec_b = _run_static_no_reschedule_baseline(instance, edats_cfg, seed)
-    rows.append(row_b)
-    records_by_method[METHOD_STATIC_BASELINE] = rec_b
+    if not args.only_oracle:
+        row_b, rec_b = _run_static_no_reschedule_baseline(instance, edats_cfg, seed)
+        rows.append(row_b)
+        records_by_method[METHOD_STATIC_BASELINE] = rec_b
+        done_methods += 1
+        if not args.no_progress:
+            print("Overall Progress " + _render_bar(done_methods, total_methods))
 
-    if dynamic_enabled:
-        row_d, rec_d = _run_dynamic_rolling_method(instance, edats_cfg, rolling_cfg, seed, until_time=until_time)
-        rows.append(row_d)
-        records_by_method[METHOD_DYNAMIC] = rec_d
+        if dynamic_enabled:
+            row_d, rec_d = _run_dynamic_rolling_method(
+                instance,
+                edats_cfg,
+                rolling_cfg,
+                seed,
+                until_time=until_time,
+                show_progress=not args.no_progress,
+            )
+            rows.append(row_d)
+            records_by_method[METHOD_DYNAMIC] = rec_d
+            done_methods += 1
+            if not args.no_progress:
+                print("Overall Progress " + _render_bar(done_methods, total_methods))
 
     results_csv = out_dir / "metrics_static_vs_dynamic.csv"
     results_json = out_dir / "metrics_static_vs_dynamic.json"
@@ -455,11 +620,13 @@ def main() -> None:
     results_json.write_text(json.dumps(rows, ensure_ascii=False, indent=2), encoding="utf-8")
 
     gantt_dir = out_dir / "gantt"
+    summary_by_method = {str(r["method"]): r for r in rows}
     for method, recs in records_by_method.items():
         _plot_gantt(
             recs,
             title=f"{instance.name} | {method}",
             out_path=gantt_dir / f"gantt_{instance.name}_{method}.png",
+            summary=summary_by_method[method],
         )
         # Save raw records for reproducibility.
         payload = [
