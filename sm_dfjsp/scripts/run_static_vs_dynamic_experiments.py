@@ -6,22 +6,27 @@ import json
 import math
 import time
 from pathlib import Path
-from typing import Dict, List, Sequence, Tuple
+from typing import Dict, List, Sequence, Tuple, cast
 
 import matplotlib.pyplot as plt
 import yaml
 
-from smdfjsp.core.types import DecodeContext, Job, RollingConfig, SMDFJSPInstance, ScheduleRecord
+from smdfjsp.core.types import Job, RollingConfig, SMDFJSPInstance, ScheduleRecord
 from smdfjsp.data.io import load_instance_json
 from smdfjsp.eda_ts import EDATS, EDATSConfig
 from smdfjsp.model.evaluator import evaluate_individual
 from smdfjsp.model.feasibility import assert_schedule_feasible
-from smdfjsp.rolling import RollingScheduler, build_remaining_subproblem, lift_records_from_subproblem
+from smdfjsp.rolling import (
+    RollingScheduler,
+    SelectionStrategy,
+    assert_dynamic_stitching,
+    solve_rescheduling_subproblem_with_edats,
+)
 
 
 METHOD_ORACLE = "static_full_information_oracle"
 METHOD_STATIC_BASELINE = "static_no_reschedule_baseline"
-METHOD_DYNAMIC = "dynamic_rolling_method"
+METHOD_DYNAMIC = "dynamic_rolling_edats"
 
 
 def _render_bar(done: int, total: int, width: int = 36) -> str:
@@ -86,29 +91,6 @@ def _pick_best_solution_records(instance: SMDFJSPInstance, cfg: EDATSConfig) -> 
     best = min(candidates, key=lambda s: (s.objectives[0], s.objectives[1]))  # type: ignore[index]
     ev = evaluate_individual(instance, best)
     return ev.records, dict(best.ua)
-
-
-def _build_subproblem_decode_context(
-    sub_instance: SMDFJSPInstance,
-    machine_ready: Dict[Tuple[int, int], float],
-    job_ready: Dict[int, float],
-    current_time: float,
-) -> DecodeContext:
-    # Inject current resource occupation into subproblem decoding to prevent
-    # overlap with already running/frozen operations across rolling windows.
-    eligible = {j.job_id for j in sub_instance.jobs}
-    sub_job_ready = {j.job_id: float(job_ready.get(j.job_id, 0.0)) for j in sub_instance.jobs}
-    return DecodeContext(
-        current_time=float(current_time),
-        eligible_job_ids=eligible,
-        completed_ops_by_job={j.job_id: 0 for j in sub_instance.jobs},
-        in_progress_ops={},
-        frozen_job_ready=sub_job_ready,
-        frozen_machine_ready=dict(machine_ready),
-        frozen_records=[],
-        frozen_ua_by_job={},
-        include_transport_for_incomplete_jobs=False,
-    )
 
 
 def _compatible_srus_for_job(job: Job, instance: SMDFJSPInstance) -> List[int]:
@@ -444,53 +426,100 @@ def _estimate_until_time(instance: SMDFJSPInstance) -> float:
     return max_release + proc_lb + float(max_t) * 2.0 + 10.0
 
 
-def _run_dynamic_rolling_method(
+def apply_reschedule_policy(
+    rolling_cfg: RollingConfig,
+    policy: str,
+    interval: float | None = None,
+) -> RollingConfig:
+    out = RollingConfig(
+        trigger_on_arrival=rolling_cfg.trigger_on_arrival,
+        trigger_on_periodic=rolling_cfg.trigger_on_periodic,
+        periodic_interval=rolling_cfg.periodic_interval,
+        trigger_on_machine_idle=rolling_cfg.trigger_on_machine_idle,
+        trigger_on_op_finish=rolling_cfg.trigger_on_op_finish,
+        reschedule_cooldown=rolling_cfg.reschedule_cooldown,
+    )
+    p = str(policy).strip().lower()
+    if p == "arrival":
+        out.trigger_on_arrival = True
+        out.trigger_on_periodic = False
+    elif p == "periodic":
+        out.trigger_on_arrival = False
+        out.trigger_on_periodic = True
+    elif p == "hybrid":
+        out.trigger_on_arrival = True
+        out.trigger_on_periodic = True
+    else:
+        raise ValueError(f"Unsupported reschedule policy: {policy}")
+    if interval is not None:
+        out.periodic_interval = float(interval)
+    return out
+
+
+def _run_dynamic_rolling_edats(
     instance: SMDFJSPInstance,
     edats_cfg: EDATSConfig,
     rolling_cfg: RollingConfig,
     seed: int,
     until_time: float,
+    selection_strategy: SelectionStrategy = "cost_then_makespan",
+    selection_cycle: int = 1,
     show_progress: bool = True,
-) -> Tuple[Dict[str, object], List[ScheduleRecord]]:
+) -> Tuple[Dict[str, object], List[ScheduleRecord], Dict[str, object]]:
     t0 = time.perf_counter()
-    reschedule_count = 0
+    callback_round = 0
+    callback_runtime_s = 0.0
+    selection_trace: List[Dict[str, object]] = []
 
     # Approximate upper bound for replan opportunities.
     scheduler_preview = RollingScheduler(instance=instance, callback=lambda *_: [], cfg=rolling_cfg, start_time=0.0)
     planned_triggers = len(scheduler_preview._build_trigger_times(until_time=float(until_time)))  # noqa: SLF001
 
     def callback(full_instance: SMDFJSPInstance, state) -> List[ScheduleRecord]:
-        nonlocal reschedule_count
-        reschedule_count += 1
+        nonlocal callback_round, callback_runtime_s
+        callback_round += 1
         if show_progress:
             print(
                 "[dynamic] "
-                + _render_bar(min(reschedule_count, planned_triggers), planned_triggers)
-                + f" reschedules={reschedule_count}"
+                + _render_bar(min(callback_round, planned_triggers), planned_triggers)
+                + f" reschedules={callback_round}"
             )
-        sub = build_remaining_subproblem(full_instance, state)
-        if not sub.instance.jobs:
-            return []
-        decode_ctx = _build_subproblem_decode_context(
-            sub_instance=sub.instance,
-            machine_ready=state.machine_ready,
-            job_ready=state.job_ready,
-            current_time=state.current_time,
+        solve_seed = int(seed + callback_round * 7919)
+        solved = solve_rescheduling_subproblem_with_edats(
+            instance=full_instance,
+            state=state,
+            config=edats_cfg,
+            selection_strategy=selection_strategy,
+            selection_cycle=selection_cycle,
+            round_index=callback_round - 1,
+            seed=solve_seed,
         )
-        algo = EDATS(sub.instance, edats_cfg)
-        rr = algo.run(eval_ctx=decode_ctx)
-        candidates = [x for x in rr.nd_solutions if x.objectives is not None]
-        if not candidates:
+        callback_runtime_s += float(solved.runtime_s)
+        trace_row: Dict[str, object] = {
+            "round": callback_round,
+            "time": float(state.current_time),
+            "subproblem": solved.subproblem_name,
+            "nd_size": len(solved.nd_solutions),
+            "candidate_size": len(solved.candidates),
+            "selected_index": solved.selected_index,
+            "selection_strategy": solved.selection_strategy,
+        }
+        if solved.selected is None:
+            selection_trace.append(trace_row)
             return []
-        best = min(candidates, key=lambda s: (s.objectives[0], s.objectives[1]))  # type: ignore[index]
-        sub_records = evaluate_individual(sub.instance, best, ctx=decode_ctx).records
-        assert_schedule_feasible(
-            instance=sub.instance,
-            records=sub_records,
-            require_complete=False,
-            context=f"{METHOD_DYNAMIC}:subproblem_t{state.current_time:.6f}",
+        selected_obj = solved.selected.solution.objectives
+        if selected_obj is not None:
+            trace_row["selected_cost"] = float(selected_obj[0])
+            trace_row["selected_makespan"] = float(selected_obj[1])
+        selection_trace.append(trace_row)
+        assert_dynamic_stitching(
+            instance=full_instance,
+            state=state,
+            candidate_records=solved.selected.lifted_records,
+            trigger_time=float(state.current_time),
+            context=f"{METHOD_DYNAMIC}:t{state.current_time:.6f}",
         )
-        return lift_records_from_subproblem(sub_records, sub.op_offset_by_job)
+        return solved.selected.lifted_records
 
     scheduler = RollingScheduler(instance=instance, callback=callback, cfg=rolling_cfg, start_time=0.0)
     state = scheduler.run(until_time=until_time)
@@ -513,10 +542,19 @@ def _run_dynamic_rolling_method(
         assignment_by_job=assignment_by_job,
         method=METHOD_DYNAMIC,
         seed=seed,
-        reschedule_count=reschedule_count,
+        reschedule_count=int(state.reschedule_count),
         runtime_seconds=rt,
     )
-    return summary, final_records
+    details = {
+        "runtime_callback_seconds": float(callback_runtime_s),
+        "reschedule_count": int(state.reschedule_count),
+        "selection_trace": selection_trace,
+        "event_log": list(state.event_log),
+        "completed_jobs": sorted(state.completed_jobs),
+        "future_jobs": sorted(state.future_jobs),
+        "active_jobs": sorted(state.active_jobs),
+    }
+    return summary, final_records, details
 
 
 def _load_cfg(path: Path) -> dict:
@@ -539,6 +577,19 @@ def main() -> None:
     parser.add_argument("--instance", default=None, help="Path relative to repo root, overrides config.instance")
     parser.add_argument("--seed", type=int, default=None, help="Override random seed")
     parser.add_argument("--rolling-interval", type=float, default=None, help="Override rolling periodic interval")
+    parser.add_argument(
+        "--reschedule-policy",
+        default=None,
+        choices=["arrival", "periodic", "hybrid"],
+        help="Rescheduling trigger policy.",
+    )
+    parser.add_argument(
+        "--selection-strategy",
+        default=None,
+        choices=["cost_then_makespan", "min_makespan", "knee", "random"],
+        help="Representative solution strategy in each ND set.",
+    )
+    parser.add_argument("--selection-cycle", type=int, default=None, help="Cycle index for deterministic strategy rotation.")
     parser.add_argument("--dynamic-enabled", action="store_true", help="Enable dynamic rolling method")
     parser.add_argument("--disable-dynamic", action="store_true", help="Disable dynamic rolling method")
     parser.add_argument(
@@ -564,10 +615,17 @@ def main() -> None:
     edats_cfg_dict["seed"] = seed
     edats_cfg = EDATSConfig(**edats_cfg_dict)
 
-    rolling_dict = dict(cfg.get("rolling", {}))
-    if args.rolling_interval is not None:
-        rolling_dict["periodic_interval"] = float(args.rolling_interval)
-    rolling_cfg = RollingConfig(**rolling_dict)
+    rolling_base = RollingConfig(**dict(cfg.get("rolling", {})))
+    policy = str(args.reschedule_policy or cfg.get("reschedule_policy", "hybrid"))
+    interval_override = args.rolling_interval if args.rolling_interval is not None else cfg.get("reschedule_interval")
+    if interval_override is None:
+        interval_override = rolling_base.periodic_interval
+    rolling_cfg = apply_reschedule_policy(rolling_base, policy=policy, interval=float(interval_override))
+    selection_strategy = cast(
+        SelectionStrategy,
+        str(args.selection_strategy or cfg.get("selection_strategy", "cost_then_makespan")),
+    )
+    selection_cycle = int(args.selection_cycle if args.selection_cycle is not None else cfg.get("selection_cycle", 1))
 
     dynamic_enabled = bool(cfg.get("dynamic_enabled", True))
     if args.dynamic_enabled:
@@ -579,6 +637,7 @@ def main() -> None:
 
     rows: List[Dict[str, object]] = []
     records_by_method: Dict[str, List[ScheduleRecord]] = {}
+    details_by_method: Dict[str, Dict[str, object]] = {}
     total_methods = 1 + (0 if args.only_oracle else 1) + (0 if args.only_oracle or not dynamic_enabled else 1)
     done_methods = 0
     if not args.no_progress:
@@ -600,16 +659,19 @@ def main() -> None:
             print("Overall Progress " + _render_bar(done_methods, total_methods))
 
         if dynamic_enabled:
-            row_d, rec_d = _run_dynamic_rolling_method(
+            row_d, rec_d, details_d = _run_dynamic_rolling_edats(
                 instance,
                 edats_cfg,
                 rolling_cfg,
                 seed,
                 until_time=until_time,
+                selection_strategy=selection_strategy,
+                selection_cycle=selection_cycle,
                 show_progress=not args.no_progress,
             )
             rows.append(row_d)
             records_by_method[METHOD_DYNAMIC] = rec_d
+            details_by_method[METHOD_DYNAMIC] = details_d
             done_methods += 1
             if not args.no_progress:
                 print("Overall Progress " + _render_bar(done_methods, total_methods))
@@ -641,6 +703,11 @@ def main() -> None:
             for r in recs
         ]
         (out_dir / f"schedule_{instance.name}_{method}.json").write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+    for method, payload in details_by_method.items():
+        (out_dir / f"details_{instance.name}_{method}.json").write_text(
             json.dumps(payload, ensure_ascii=False, indent=2),
             encoding="utf-8",
         )

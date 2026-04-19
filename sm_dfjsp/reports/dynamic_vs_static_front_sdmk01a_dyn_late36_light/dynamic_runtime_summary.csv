@@ -1,0 +1,7 @@
+instance,method,selection_policy,method_label,n_runs,mean_avg_response_time,std_avg_response_time,mean_avg_flow_time,std_avg_flow_time,mean_reschedule_count,std_reschedule_count,mean_runtime,std_runtime
+sdmk01a_dyn_late36,dynamic_rolling_edats,cost_then_makespan,dynamic_cost_then_makespan,1,5.2,0.0,1693.3,0.0,40.0,0.0,5.18137609999394,0.0
+sdmk01a_dyn_late36,dynamic_rolling_edats,knee,dynamic_knee,1,16.1,0.0,1731.4,0.0,40.0,0.0,5.305832399986684,0.0
+sdmk01a_dyn_late36,dynamic_rolling_edats,min_makespan,dynamic_min_makespan,1,28.0,0.0,1704.0,0.0,40.0,0.0,5.278158499975689,0.0
+sdmk01a_dyn_late36,dynamic_rolling_edats,random,dynamic_random,1,10.2,0.0,1864.8,0.0,40.0,0.0,5.420677500020247,0.0
+sdmk01a_dyn_late36,static_full_information_oracle,knee,static_full_information_oracle,1,52.1,0.0,2239.0,0.0,0.0,0.0,0.555493599968031,0.0
+sdmk01a_dyn_late36,static_no_reschedule_baseline,none,static_no_reschedule_baseline,1,984.0,0.0,2362.1,0.0,0.0,0.0,0.19542139995610341,0.0

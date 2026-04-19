@@ -21,8 +21,10 @@ def initialize_rolling_state(instance: SMDFJSPInstance, start_time: float = 0.0)
         state.job_ready[job.job_id] = max(float(start_time), float(job.release_time))
         if job.release_time <= start_time:
             state.active_jobs.add(job.job_id)
+            state.released_jobs.add(job.job_id)
         else:
             state.future_jobs.add(job.job_id)
+            state.unreleased_jobs.add(job.job_id)
     return state
 
 
@@ -76,16 +78,21 @@ def refresh_job_sets(instance: SMDFJSPInstance, state: RollingState, time_point:
     state.current_time = float(time_point)
     state.active_jobs.clear()
     state.future_jobs.clear()
+    state.released_jobs.clear()
+    state.unreleased_jobs.clear()
     state.completed_jobs.clear()
     for job in instance.jobs:
         completed = int(state.completed_ops_by_job.get(job.job_id, 0))
         if completed >= len(job.operations):
             state.completed_jobs.add(job.job_id)
+            state.released_jobs.add(job.job_id)
             continue
         if float(job.release_time) <= float(time_point):
             state.active_jobs.add(job.job_id)
+            state.released_jobs.add(job.job_id)
         else:
             state.future_jobs.add(job.job_id)
+            state.unreleased_jobs.add(job.job_id)
 
 
 def build_decode_context(instance: SMDFJSPInstance, state: RollingState) -> DecodeContext:

@@ -1,0 +1,6 @@
+instance,run,point_id,total_cost,makespan,is_knee,is_min_cost,is_min_makespan
+sdmk01a_dyn_late36,1,0,42083.0,2904.0,False,True,False
+sdmk01a_dyn_late36,1,1,42501.0,2547.0,True,False,False
+sdmk01a_dyn_late36,1,2,42989.0,2508.0,False,False,False
+sdmk01a_dyn_late36,1,3,43718.0,2459.0,False,False,False
+sdmk01a_dyn_late36,1,4,43825.0,2330.0,False,False,True

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable, Dict, List, Set, Tuple
+from typing import Callable, Dict, List, Optional, Set, Tuple
 
 from smdfjsp.core.types import (
     InProgressOpRecord,
@@ -17,6 +17,14 @@ from smdfjsp.rolling.state import (
     initialize_rolling_state,
     refresh_job_sets,
     settle_in_progress_until,
+)
+from smdfjsp.rolling.events import (
+    EVENT_ARRIVAL,
+    EVENT_PERIODIC,
+    arrivals_at_time,
+    is_periodic_time,
+    next_event_time,
+    should_trigger_reschedule,
 )
 
 
@@ -122,6 +130,7 @@ def lift_records_from_subproblem(
 
 
 RescheduleCallback = Callable[[SMDFJSPInstance, RollingState], List[ScheduleRecord]]
+PlanValidator = Callable[[SMDFJSPInstance, RollingState, List[ScheduleRecord], float], None]
 
 
 class RollingScheduler:
@@ -138,9 +147,11 @@ class RollingScheduler:
         callback: RescheduleCallback,
         cfg: RollingConfig | None = None,
         start_time: float = 0.0,
+        validator: Optional[PlanValidator] = None,
     ):
         self.instance = instance
         self.callback = callback
+        self.validator = validator
         self.cfg = cfg or RollingConfig()
         self.state = initialize_rolling_state(instance, start_time=start_time)
 
@@ -188,22 +199,61 @@ class RollingScheduler:
         refresh_job_sets(self.instance, self.state, interval_end)
 
     def run(self, until_time: float) -> RollingState:
-        trigger_times = self._build_trigger_times(until_time=float(until_time))
+        horizon = float(until_time)
+        eps = 1e-9
         active_plan_records: List[ScheduleRecord] = []
-        for idx, t in enumerate(trigger_times):
-            settle_in_progress_until(self.instance, self.state, float(t))
-            refresh_job_sets(self.instance, self.state, float(t))
+        first_round = True
+        while self.state.current_time < horizon - eps:
+            now = float(self.state.current_time)
+            settle_in_progress_until(self.instance, self.state, now)
+            refresh_job_sets(self.instance, self.state, now)
+
+            trigger_now = first_round or should_trigger_reschedule(self.state, self.cfg, now, eps=eps)
             should_skip_replan = (
                 self.state.last_reschedule_time >= 0
                 and self.cfg.reschedule_cooldown > 0
-                and (t - self.state.last_reschedule_time) < self.cfg.reschedule_cooldown
+                and (now - self.state.last_reschedule_time) < self.cfg.reschedule_cooldown
             )
-            if not should_skip_replan:
+            did_replan = False
+            if trigger_now and not should_skip_replan:
                 active_plan_records = self.callback(self.instance, self.state)
-                self.state.current_plan = {"records_count": len(active_plan_records), "trigger_time": float(t)}
-                self.state.last_reschedule_time = float(t)
-            next_t = trigger_times[idx + 1] if idx + 1 < len(trigger_times) else float(until_time)
+                if self.validator is not None:
+                    self.validator(self.instance, self.state, active_plan_records, now)
+                self.state.current_plan = {"records_count": len(active_plan_records), "trigger_time": now}
+                self.state.last_reschedule_time = now
+                self.state.reschedule_count += 1
+                did_replan = True
+
+            tags: List[str] = []
+            if first_round:
+                tags.append("initial")
+            if arrivals_at_time(self.state, now, eps=eps):
+                tags.append(EVENT_ARRIVAL)
+            if self.cfg.trigger_on_periodic and is_periodic_time(now, self.cfg.periodic_interval, eps=eps):
+                tags.append(EVENT_PERIODIC)
+            if did_replan:
+                tags.append("reschedule")
+            self.state.event_log.append(
+                {
+                    "time": now,
+                    "tags": tags,
+                    "active_jobs": len(self.state.active_jobs),
+                    "future_jobs": len(self.state.future_jobs),
+                    "records_count": len(active_plan_records),
+                }
+            )
+
+            next_t = next_event_time(
+                state=self.state,
+                cfg=self.cfg,
+                after_time=now,
+                until_time=horizon,
+            )
+            if next_t <= now + eps:
+                next_t = horizon
             self._apply_plan_until(active_plan_records, next_t)
-        settle_in_progress_until(self.instance, self.state, float(until_time))
-        refresh_job_sets(self.instance, self.state, float(until_time))
+            first_round = False
+
+        settle_in_progress_until(self.instance, self.state, horizon)
+        refresh_job_sets(self.instance, self.state, horizon)
         return self.state

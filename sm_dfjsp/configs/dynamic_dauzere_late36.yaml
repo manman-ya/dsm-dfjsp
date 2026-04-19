@@ -1,0 +1,18 @@
+seed: 20260418
+source_dir: data/dauzere_dynamic
+output_dir: data/dauzere_dynamic_late36_batch
+manifest_name: manifest_dynamic_late36.csv
+pattern: sdmk*_dyn.json
+
+# Keep existing initial jobs (release_time=0), retime only future jobs.
+name_suffix: _late36
+release_time_step: 5
+
+# Future arrivals are pushed to when initial jobs are estimated to have
+# finished around op 3~6, then spread in that window.
+initial_progress_ops_range: [3, 6]
+arrival_window_scale: 1.2
+
+# Ensure newly generated arrivals are at least this many steps later than
+# the earliest existing future arrival in source dynamic instances.
+min_shift_steps: 3

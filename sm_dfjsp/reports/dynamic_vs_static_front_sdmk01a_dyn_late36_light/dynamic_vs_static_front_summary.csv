@@ -1,0 +1,9 @@
+instance,method,selection_policy,n_runs,mean_total_cost,std_total_cost,mean_makespan,std_makespan,mean_distance_to_static_front,std_distance_to_static_front,mean_cost_gap_to_front,std_cost_gap_to_front,mean_makespan_gap_to_front,std_makespan_gap_to_front,mean_avg_response_time,std_avg_response_time,mean_avg_flow_time,std_avg_flow_time,mean_reschedule_count,std_reschedule_count,mean_runtime,std_runtime,dominated_ratio
+sdmk01a_dyn_late36,dynamic_rolling_edats,cost_then_makespan,1,42855.0,0.0,2079.0,0.0,0.5256587864416552,0.0,-0.003117076461420363,0.0,-0.17105263157894737,0.0,5.2,0.0,1693.3,0.0,40.0,0.0,5.18137609999394,0.0,0.0
+sdmk01a_dyn_late36,dynamic_rolling_edats,knee,1,42674.0,0.0,2106.0,0.0,0.5352306081294681,0.0,-0.0073274558608016,0.0,-0.16028708133971292,0.0,16.1,0.0,1731.4,0.0,40.0,0.0,5.305832399986684,0.0,0.0
+sdmk01a_dyn_late36,dynamic_rolling_edats,min_makespan,1,44525.0,0.0,2064.0,0.0,0.42713717306559645,0.0,0.015972618368511125,0.0,-0.11416309012875536,0.0,28.0,0.0,1704.0,0.0,40.0,0.0,5.278158499975689,0.0,0.0
+sdmk01a_dyn_late36,dynamic_rolling_edats,random,1,43076.0,0.0,2129.0,0.0,0.49157584582129055,0.0,0.0020237735234594897,0.0,-0.1511164274322169,0.0,10.2,0.0,1864.8,0.0,40.0,0.0,5.420677500020247,0.0,0.0
+sdmk01a_dyn_late36,static_full_information_oracle,knee,1,42501.0,0.0,2547.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,52.1,0.0,2239.0,0.0,0.0,0.0,0.555493599968031,0.0,0.0
+sdmk01a_dyn_late36,static_full_information_oracle,min_cost,1,42083.0,0.0,2904.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,125.1,0.0,2626.0,0.0,0.0,0.0,0.555493599968031,0.0,0.0
+sdmk01a_dyn_late36,static_full_information_oracle,min_makespan,1,43825.0,0.0,2330.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,46.8,0.0,2098.8,0.0,0.0,0.0,0.555493599968031,0.0,0.0
+sdmk01a_dyn_late36,static_no_reschedule_baseline,none,1,44445.0,0.0,4448.0,0.0,0.9882465592103399,0.0,0.01662930600667917,0.0,0.8088653924359496,0.0,984.0,0.0,2362.1,0.0,0.0,0.0,0.19542139995610341,0.0,1.0

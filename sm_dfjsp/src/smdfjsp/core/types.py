@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 
 ObjPair = Tuple[float, float]  # (total_cost, makespan)
@@ -173,6 +173,8 @@ class RollingState:
     current_time: float = 0.0
     active_jobs: Set[int] = field(default_factory=set)
     future_jobs: Set[int] = field(default_factory=set)
+    released_jobs: Set[int] = field(default_factory=set)
+    unreleased_jobs: Set[int] = field(default_factory=set)
     completed_jobs: Set[int] = field(default_factory=set)
     completed_ops_by_job: Dict[int, int] = field(default_factory=dict)
     in_progress_ops: Dict[Tuple[int, int], InProgressOpRecord] = field(default_factory=dict)
@@ -182,5 +184,7 @@ class RollingState:
     frozen_records: List[ScheduleRecord] = field(default_factory=list)
     arrival_stream_index: Dict[float, List[int]] = field(default_factory=dict)
     last_reschedule_time: float = -1.0
+    reschedule_count: int = 0
+    event_log: List[Dict[str, Any]] = field(default_factory=list)
     current_plan: Dict[str, object] = field(default_factory=dict)
 

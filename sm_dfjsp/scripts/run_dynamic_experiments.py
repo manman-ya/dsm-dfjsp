@@ -3,54 +3,18 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
-from typing import List
 
 import yaml
 
-from smdfjsp.core.types import DecodeContext, RollingConfig, ScheduleRecord
+from smdfjsp.core.types import RollingConfig
 from smdfjsp.data.io import load_instance_json
-from smdfjsp.eda_ts import EDATS, EDATSConfig
-from smdfjsp.model.evaluator import evaluate_individual
+from smdfjsp.eda_ts import EDATSConfig
 from smdfjsp.model.feasibility import assert_schedule_feasible
-from smdfjsp.rolling import RollingScheduler, build_remaining_subproblem, lift_records_from_subproblem
-
-
-def _pick_best_records_for_subproblem(
-    sub_instance,
-    cfg: EDATSConfig,
-    decode_ctx: DecodeContext | None = None,
-) -> List[ScheduleRecord]:
-    algo = EDATS(sub_instance, cfg)
-    result = algo.run(eval_ctx=decode_ctx)
-    if not result.nd_solutions:
-        return []
-    feasible = [x for x in result.nd_solutions if x.objectives is not None]
-    if not feasible:
-        return []
-    best = min(feasible, key=lambda x: x.objectives[0] + x.objectives[1])  # type: ignore[index]
-    ev = evaluate_individual(sub_instance, best, ctx=decode_ctx)
-    return ev.records
-
-
-def _build_subproblem_decode_context(
-    sub_instance,
-    machine_ready,
-    job_ready,
-    current_time: float,
-) -> DecodeContext:
-    eligible = {j.job_id for j in sub_instance.jobs}
-    sub_job_ready = {j.job_id: float(job_ready.get(j.job_id, 0.0)) for j in sub_instance.jobs}
-    return DecodeContext(
-        current_time=float(current_time),
-        eligible_job_ids=eligible,
-        completed_ops_by_job={j.job_id: 0 for j in sub_instance.jobs},
-        in_progress_ops={},
-        frozen_job_ready=sub_job_ready,
-        frozen_machine_ready=dict(machine_ready),
-        frozen_records=[],
-        frozen_ua_by_job={},
-        include_transport_for_incomplete_jobs=False,
-    )
+from smdfjsp.rolling import (
+    RollingScheduler,
+    assert_dynamic_stitching,
+    solve_rescheduling_subproblem_with_edats,
+)
 
 
 def main() -> None:
@@ -69,25 +33,32 @@ def main() -> None:
     edats_cfg_dict.setdefault("seed", int(cfg.get("seed", 20260408)))
     edats_cfg = EDATSConfig(**edats_cfg_dict)
     rolling_cfg = RollingConfig(**cfg["rolling"])
+    selection_strategy = str(cfg.get("selection_strategy", "cost_then_makespan"))
+    selection_cycle = int(cfg.get("selection_cycle", 1))
+    callback_round = 0
 
     def callback(full_instance, state):
-        sub = build_remaining_subproblem(full_instance, state)
-        if not sub.instance.jobs:
-            return []
-        decode_ctx = _build_subproblem_decode_context(
-            sub_instance=sub.instance,
-            machine_ready=state.machine_ready,
-            job_ready=state.job_ready,
-            current_time=state.current_time,
+        nonlocal callback_round
+        callback_round += 1
+        solved = solve_rescheduling_subproblem_with_edats(
+            instance=full_instance,
+            state=state,
+            config=edats_cfg,
+            selection_strategy=selection_strategy,  # type: ignore[arg-type]
+            selection_cycle=selection_cycle,
+            round_index=callback_round - 1,
+            seed=edats_cfg.seed + callback_round * 7919,
         )
-        sub_records = _pick_best_records_for_subproblem(sub.instance, cfg=edats_cfg, decode_ctx=decode_ctx)
-        assert_schedule_feasible(
-            instance=sub.instance,
-            records=sub_records,
-            require_complete=False,
+        if solved.selected is None:
+            return []
+        assert_dynamic_stitching(
+            instance=full_instance,
+            state=state,
+            candidate_records=solved.selected.lifted_records,
+            trigger_time=float(state.current_time),
             context=f"dynamic_subproblem_t{state.current_time:.6f}",
         )
-        return lift_records_from_subproblem(sub_records, sub.op_offset_by_job)
+        return solved.selected.lifted_records
 
     scheduler = RollingScheduler(instance=instance, callback=callback, cfg=rolling_cfg, start_time=0.0)
     state = scheduler.run(until_time=until_time)

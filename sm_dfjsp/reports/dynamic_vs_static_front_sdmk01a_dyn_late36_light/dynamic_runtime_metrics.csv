@@ -1,0 +1,7 @@
+instance,run,method,selection_policy,method_label,avg_response_time,avg_flow_time,reschedule_count,runtime
+sdmk01a_dyn_late36,1,static_full_information_oracle,knee,static_full_information_oracle,52.1,2239.0,0,0.555493599968031
+sdmk01a_dyn_late36,1,static_no_reschedule_baseline,none,static_no_reschedule_baseline,984.0,2362.1,0,0.19542139995610341
+sdmk01a_dyn_late36,1,dynamic_rolling_edats,cost_then_makespan,dynamic_cost_then_makespan,5.2,1693.3,40,5.18137609999394
+sdmk01a_dyn_late36,1,dynamic_rolling_edats,min_makespan,dynamic_min_makespan,28.0,1704.0,40,5.278158499975689
+sdmk01a_dyn_late36,1,dynamic_rolling_edats,knee,dynamic_knee,16.1,1731.4,40,5.305832399986684
+sdmk01a_dyn_late36,1,dynamic_rolling_edats,random,dynamic_random,10.2,1864.8,40,5.420677500020247
